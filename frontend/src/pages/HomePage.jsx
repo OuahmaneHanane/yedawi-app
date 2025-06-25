@@ -12,7 +12,7 @@ import {
   Shield,
   Users
 } from 'lucide-react'; 
-
+ 
 const Home = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 

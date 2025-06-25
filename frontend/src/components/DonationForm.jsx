@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'; 
 import FormInput from './FormInput';
 import SwitchToggle from './SwitchToggle';
 import SubmitButton from './SubmitButton';
@@ -17,6 +17,7 @@ const DonationForm = () => {
     amount: '',
     paymentMethod: '',
     isRecurring: false,
+    tipAmount: 0,
   });
 
   const handleChange = (e) => {
@@ -37,18 +38,32 @@ const DonationForm = () => {
     setStep('receipt');
   };
 
+  const totalAmount = Number(formData.amount) + Number(formData.tipAmount);
+
   if (step === 'receipt') {
-    return <ReceiptBox donationID={donationID} email={formData.email} />;
+    return <ReceiptBox donationID={donationID} email={formData.email} total={totalAmount} />;
   }
 
   if (step === 'summary') {
-    return <DonationSummary formData={formData} onEdit={() => setStep('form')} onConfirm={handleConfirmDonation} />;
+    return (
+      <DonationSummary
+        formData={formData}
+        totalAmount={totalAmount}
+        onEdit={() => setStep('form')}
+        onConfirm={handleConfirmDonation}
+      />
+    );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-lg flex flex-col gap-6">
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-lg flex flex-col gap-6"
+    >
       <h2 className="text-3xl font-bold text-center mb-2">Make a Difference</h2>
-      <p className="text-center text-gray-600 mb-4">Your donation helps us continue our mission. Thank you!</p>
+      <p className="text-center text-gray-600 mb-4">
+        Your donation helps us continue our mission. Thank you!
+      </p>
 
       <div className="space-y-4">
         <FormInput label="Full Name" name="fullName" value={formData.fullName} onChange={handleChange} required />
@@ -65,26 +80,40 @@ const DonationForm = () => {
           onChange={(e) => {
             const val = e.target.value;
 
-            // Allow empty string for better UX
             if (val === '') {
-              setFormData({ ...formData, amount: '' });
+              setFormData({ ...formData, amount: '', tipAmount: 0 });
               return;
             }
 
             let value = Number(val);
             if (value < 1) value = 1;
 
-            setFormData({ ...formData, amount: value });
+            const tip = parseFloat((value * 0.03).toFixed(2));
+
+            setFormData({ ...formData, amount: value, tipAmount: tip });
           }}
           onBlur={() => {
-            // On blur, correct empty or invalid values
             if (!formData.amount || formData.amount < 1) {
-              setFormData({ ...formData, amount: 1 });
+              const corrected = 1;
+              setFormData({
+                ...formData,
+                amount: corrected,
+                tipAmount: parseFloat((corrected * 0.03).toFixed(2)),
+              });
             }
           }}
           type="number"
           min="1"
           required
+        />
+
+        {/* ✅ Yedawi Tip Input (Read-only) */}
+        <FormInput
+          label="Yedawi Tip (3%)"
+          name="tipAmount"
+          value={formData.tipAmount}
+          type="number"
+          readOnly
         />
       </div>
 
