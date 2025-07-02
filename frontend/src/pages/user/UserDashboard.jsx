@@ -12,7 +12,7 @@ import { CheckCircle, Award, Heart, TrendingUp } from 'lucide-react';
 
 
 // Main Dashboard Component
-const YedawiDonorDashboard = () => {
+const UserDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [notifications, setNotifications] = useState(3);
   const [showNotification, setShowNotification] = useState(false);
@@ -115,4 +115,4 @@ const YedawiDonorDashboard = () => {
   );
 };
 
-export default YedawiDonorDashboard;
+export default UserDashboard;

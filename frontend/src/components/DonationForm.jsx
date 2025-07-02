@@ -1,161 +1,141 @@
-import React, { useState } from 'react'; 
-import FormInput from './FormInput';
-import SwitchToggle from './SwitchToggle';
-import SubmitButton from './SubmitButton';
-import ReceiptBox from './ReceiptBox';
-import DonationSummary from './DonationSummary';
-import { FaCreditCard, FaPaypal, FaMobileAlt } from 'react-icons/fa';
+import React, { useState } from "react";
+import DonationSummary from "./DonationSummary";
+import ReceiptBox from "./ReceiptBox";
+import DonateButton from "./DonationButton";
 
-const DonationForm = () => {
-  const [step, setStep] = useState('form'); // form, summary, receipt
-  const [donationID] = useState(() => Math.random().toString(36).substr(2, 9).toUpperCase());
+const DonationForm = ({ userData = {}  }) => {
+  const fullName = userData?.fullName || "";
+  const email = userData?.email || "";
 
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    amount: '',
-    paymentMethod: '',
-    isRecurring: false,
-    tipAmount: 0,
+    fullName,
+    email,
+    phone: "",
+    amount: "",
+    tip: 0,
+    method: "Credit Card",
+    recurring: false,
+    recurrenceType: "Monthly",
   });
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const [showSummary, setShowSummary] = useState(false);
+  const [donationSuccess, setDonationSuccess] = useState(false);
 
-  const handleToggle = () => {
-    setFormData({ ...formData, isRecurring: !formData.isRecurring });
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    const updatedValue = type === "checkbox" ? checked : value;
+
+    setFormData((prev) => {
+      const updated = { ...prev, [name]: updatedValue };
+      if (name === "amount") {
+        updated.tip = (parseFloat(value || 0) * 0.03).toFixed(2);
+      }
+      return updated;
+    });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setStep('summary');
+    setShowSummary(true);
   };
 
-  const handleConfirmDonation = () => {
-    console.log('Donation confirmed:', formData);
-    setStep('receipt');
-  };
+  const [donationDetails, setDonationDetails] = useState(null);
 
-  const totalAmount = Number(formData.amount) + Number(formData.tipAmount);
-
-  if (step === 'receipt') {
-    return <ReceiptBox donationID={donationID} email={formData.email} total={totalAmount} />;
-  }
-
-  if (step === 'summary') {
-    return (
-      <DonationSummary
-        formData={formData}
-        totalAmount={totalAmount}
-        onEdit={() => setStep('form')}
-        onConfirm={handleConfirmDonation}
-      />
-    );
-  }
+const handleDonationComplete = (paypalDetails = null) => {
+  setDonationSuccess(true);
+  setShowSummary(false);
+  setDonationDetails({
+    id: paypalDetails?.id || "offline-" + Date.now(),
+    email: formData.email
+  });
+};
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-lg flex flex-col gap-6"
-    >
-      <h2 className="text-3xl font-bold text-center mb-2">Make a Difference</h2>
-      <p className="text-center text-gray-600 mb-4">
-        Your donation helps us continue our mission. Thank you!
-      </p>
+    <div className="p-4 max-w-xl mx-auto shadow-md rounded-xl bg-white">
+      <h2 className="text-2xl font-bold mb-4">Make a Donation</h2>
+      {donationSuccess ? (
+  <ReceiptBox donationID={donationDetails?.id} email={donationDetails?.email} amount={formData.amount}/>
+) : showSummary ? (
+  <DonationSummary
+    formData={formData}
+    onEdit={() => setShowSummary(false)}
+    onComplete={handleDonationComplete}
+  />
 
-      <div className="space-y-4">
-        <FormInput label="Full Name" name="fullName" value={formData.fullName} onChange={handleChange} required />
-        <FormInput label="Email Address" name="email" value={formData.email} onChange={handleChange} required />
-        <FormInput label="Phone Number" name="phone" value={formData.phone} onChange={handleChange} />
-      </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block font-semibold">Full Name</label>
+            <input type="text" value={formData.fullName} disabled className="input" />
+          </div>
+          <div>
+            <label className="block font-semibold">Email</label>
+            <input type="email" value={formData.email} disabled className="input" />
+          </div>
+          <div>
+            <label className="block font-semibold">Phone Number</label>
+            <input
+              type="text"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              required
+              className="input"
+            />
+          </div>
+          <div>
+            <label className="block font-semibold">Donation Amount (USD)</label>
+            <input
+              type="number"
+              name="amount"
+              value={formData.amount}
+              onChange={handleChange}
+              required
+              min="1"
+              className="input"
+            />
+          </div>
+          <div>
+            <label className="block font-semibold">Yedawi Tip (3%)</label>
+            <input type="text" value={formData.tip} disabled className="input" />
+          </div>
 
-      <div className="space-y-2">
-        <h3 className="font-semibold text-gray-700">Donation Amount</h3>
-        <FormInput
-          label="Enter Amount (MAD)"
-          name="amount"
-          value={formData.amount}
-          onChange={(e) => {
-            const val = e.target.value;
+          <div>
+            <label className="block font-semibold">Payment Method</label>
+            <select name="method" value={formData.method} onChange={handleChange} className="input">
+              <option value="Credit Card">Credit Card</option>
+              <option value="PayPal">PayPal</option>
+              <option value="Mobile Payment">Mobile Payment</option>
+            </select>
+          </div>
 
-            if (val === '') {
-              setFormData({ ...formData, amount: '', tipAmount: 0 });
-              return;
-            }
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              name="recurring"
+              checked={formData.recurring}
+              onChange={handleChange}
+            />
+            <label>Make this a Recurring Donation</label>
+            {formData.recurring && (
+              <select
+                name="recurrenceType"
+                value={formData.recurrenceType}
+                onChange={handleChange}
+                className="ml-2 input"
+              >
+                <option value="Monthly">Monthly</option>
+                <option value="Yearly">Yearly</option>
+              </select>
+            )}
+          </div>
 
-            let value = Number(val);
-            if (value < 1) value = 1;
-
-            const tip = parseFloat((value * 0.03).toFixed(2));
-
-            setFormData({ ...formData, amount: value, tipAmount: tip });
-          }}
-          onBlur={() => {
-            if (!formData.amount || formData.amount < 1) {
-              const corrected = 1;
-              setFormData({
-                ...formData,
-                amount: corrected,
-                tipAmount: parseFloat((corrected * 0.03).toFixed(2)),
-              });
-            }
-          }}
-          type="number"
-          min="1"
-          required
-        />
-
-        {/* ✅ Yedawi Tip Input (Read-only) */}
-        <FormInput
-          label="Yedawi Tip (3%)"
-          name="tipAmount"
-          value={formData.tipAmount}
-          type="number"
-          readOnly
-        />
-      </div>
-
-      <div className="space-y-2">
-        <h3 className="font-semibold text-gray-700 mb-2">Select Payment Method</h3>
-        <div className="grid grid-cols-2 gap-4">
-          {[
-            { name: 'Credit Card', icon: <FaCreditCard className="text-xl text-blue-600" /> },
-            { name: 'PayPal', icon: <FaPaypal className="text-xl text-blue-600" /> },
-            { name: 'Mobile Payment', icon: <FaMobileAlt className="text-xl text-blue-600" /> },
-          ].map((method) => (
-            <label
-              key={method.name}
-              className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:border-blue-500 transition ${
-                formData.paymentMethod === method.name ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value={method.name}
-                  checked={formData.paymentMethod === method.name}
-                  onChange={handleChange}
-                  required
-                />
-                <span className="font-medium text-gray-700">{method.name}</span>
-              </div>
-              {method.icon}
-            </label>
-          ))}
-        </div>
-      </div>
-
-      <SwitchToggle
-        label="Make this a Recurring Donation (Monthly/Yearly)"
-        isToggled={formData.isRecurring}
-        onToggle={handleToggle}
-      />
-
-      <SubmitButton text="Continue to Summary" />
-    </form>
+          <button type="submit" className="bg-green-400 text-white p-2 w-full rounded">
+            Continue to Summary
+          </button>
+        </form>
+      )}
+    </div>
   );
 };
 

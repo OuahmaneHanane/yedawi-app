@@ -4,7 +4,7 @@ const AuthImagePanel = ({ isLogin }) => (
   <div className="relative h-full flex flex-col items-center justify-center p-8 text-center">
     {/* Logo */}
     <div className="relative z-10 mb-6 flex items-center justify-center">
-      <img src="/holding-hands.png" alt="holding hands logo" className="w-32 h-32 md:w-40 md:h-40 object-contain" />
+      <img src="/hand-heart.svg" alt="a hand holding a heart logo" className="w-32 h-32 md:w-40 md:h-40 object-contain" />
     </div>
 
     {/* Text Content */}

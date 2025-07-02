@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import BackgroundDecor from '../components/BackgroundDecor';
+import { useNavigate } from 'react-router-dom';
 import AuthForm from '../components/AuthForm';
 import AuthImagePanel from '../components/AuthImagePanel';
 
 const LoginRegisterPage = () => {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -17,9 +18,17 @@ const LoginRegisterPage = () => {
     }, 150);
   };
 
+  const handleSuccess = (user) => {
+    // Store to localStorage or context if needed
+    if (user.role === 'donor') {
+      navigate('/DonorDashboard'); // or /donate
+    } else if (user.role === 'beneficiary') {
+      navigate('/BeneficiaryDashboard'); // or /submit-request
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
-      <BackgroundDecor />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4 ">
 
       <div className="relative w-full max-w-5xl bg-white rounded-2xl shadow-2xl overflow-hidden">
         <div className="flex flex-col md:flex-row w-full max-w-6xl min-h-[650px] bg-white rounded-2xl shadow-2xl overflow-hidden">
@@ -31,7 +40,13 @@ const LoginRegisterPage = () => {
             ${isAnimating ? 'scale-95 opacity-80' : 'scale-100 opacity-100'}
             ${isLogin ? 'order-1' : 'order-2'}
           `}>
-            <AuthForm isLogin={isLogin} onToggle={handleToggle} isAnimating={isAnimating} showToggle={true}/>
+            <AuthForm
+             isLogin={isLogin} 
+             onToggle={handleToggle} 
+             isAnimating={isAnimating} 
+             showToggle={true}
+            onSuccess={handleSuccess}
+            />
           </div>
 
           {/* Image Panel */}
