@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import axios from "axios";
 import DonationSummary from "./DonationSummary";
 import ReceiptBox from "./ReceiptBox";
-import DonateButton from "./DonationButton";
+// import DonateButton from "./DonationButton";
 
 const DonationForm = ({ userData = {}  }) => {
   const fullName = userData?.fullName || "";
@@ -40,29 +41,64 @@ const DonationForm = ({ userData = {}  }) => {
   };
 
   const [donationDetails, setDonationDetails] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
-const handleDonationComplete = (paypalDetails = null) => {
-  setDonationSuccess(true);
-  setShowSummary(false);
-  setDonationDetails({
-    id: paypalDetails?.id || "offline-" + Date.now(),
-    email: formData.email
-  });
+const handleDonationComplete = async (paypalDetails = null) => {
+  try {
+    setSubmitting(true);
+
+    // 1️⃣  Send donation data to your API
+    const res = await axios.post("http://localhost:5000/api/donations", {
+      fullName: formData.fullName,
+      email: formData.email,
+      phone: formData.phone,
+      amount: Number(formData.amount),
+      tip: Number(formData.tip),
+      method: paypalDetails ? "PayPal" : formData.method,
+      status: "completed",            // or "pending" if applicable
+      transactionId: paypalDetails?.id
+    });
+
+    // 2️⃣  Back‑end returns { donationId: "..." }
+    const backendID = res.data.donationId;
+
+    // 3️⃣  Update UI state
+    setDonationSuccess(true);
+    setShowSummary(false);
+    setDonationDetails({
+      id: backendID,
+      email: formData.email
+    });
+  } catch (err) {
+    console.error("Donation save failed:", err);
+    alert("Sorry, something went wrong saving your donation. Please try again.");
+  } finally {
+    setSubmitting(false);
+  }
 };
 
   return (
-    <div className="p-4 max-w-xl mx-auto shadow-md rounded-xl bg-white">
-      <h2 className="text-2xl font-bold mb-4">Make a Donation</h2>
-      {donationSuccess ? (
-  <ReceiptBox donationID={donationDetails?.id} email={donationDetails?.email} amount={formData.amount}/>
-) : showSummary ? (
-  <DonationSummary
-    formData={formData}
-    onEdit={() => setShowSummary(false)}
-    onComplete={handleDonationComplete}
-  />
+  <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+    <div className="w-full max-w-4xl bg-white shadow-md rounded-xl p-6">
 
+      {donationSuccess ? (
+        <ReceiptBox
+          donationID={donationDetails?.id}
+          email={donationDetails?.email}
+          amount={formData.amount}
+          fullName={formData.fullName}
+          method={formData.method}
+          tip={formData.tip}
+        />
+      ) : showSummary ? (
+        <DonationSummary
+          formData={formData}
+          onEdit={() => setShowSummary(false)}
+          onComplete={handleDonationComplete}
+        />
       ) : (
+        <div>
+         <h2 className="text-2xl font-bold mb-4 text-center">Make a Donation</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block font-semibold">Full Name</label>
@@ -134,7 +170,9 @@ const handleDonationComplete = (paypalDetails = null) => {
             Continue to Summary
           </button>
         </form>
+        </div>
       )}
+    </div>
     </div>
   );
 };

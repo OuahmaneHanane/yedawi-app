@@ -8,8 +8,8 @@ const DonationSummary = ({ formData, onEdit, onComplete, showPrint = false }) =>
   const isPayPal = formData.method === "PayPal";
 
   return (
-    <div className="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-lg space-y-6">
-      <h2 className="text-2xl font-bold text-center text-blue-700 mb-4">
+    <div >
+      <h2 className="text-2xl font-bold text-center text-green-400 mb-4">
         Review Your Donation
       </h2>
 

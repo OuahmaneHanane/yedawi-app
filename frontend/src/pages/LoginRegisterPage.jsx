@@ -1,13 +1,40 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation  } from 'react-router-dom';
 import AuthForm from '../components/AuthForm';
 import AuthImagePanel from '../components/AuthImagePanel';
+import { getStoredUser } from '../utils/auth'; // your helper
+
 
 const LoginRegisterPage = () => {
   const navigate = useNavigate();
+  const { search } = useLocation();
+
+    // ?redirect=/donate
+  const redirectTo = new URLSearchParams(search).get('redirect');
   const [isLogin, setIsLogin] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
 
+   /** Decides where the user should finally land. */
+  const smartRedirect = (user) => {
+    // 1️⃣ honour a redirect query *unless* it's missing or just "/dashboard"
+    if (redirectTo && redirectTo !== '/dashboard') {
+      navigate(redirectTo, { replace: true });
+      return;
+    }
+
+    // 2️⃣ otherwise role‑based dashboards
+    if (user?.role === 'admin') {
+      navigate('/admin/dashboard', { replace: true });
+    } else {
+      navigate('/dashboard', { replace: true });
+    }
+  };
+
+  // 👉 If the visitor is already logged‑in, skip the form entirely.
+  useEffect(() => {
+    const existingUser = getStoredUser();
+    if (existingUser) smartRedirect(existingUser);
+  }, [redirectTo]);     // eslint‑disable‑line react-hooks/exhaustive-deps
   const handleToggle = () => {
     if (isAnimating) return;
 
@@ -18,13 +45,10 @@ const LoginRegisterPage = () => {
     }, 150);
   };
 
-  const handleSuccess = (user) => {
-    // Store to localStorage or context if needed
-    if (user.role === 'donor') {
-      navigate('/DonorDashboard'); // or /donate
-    } else if (user.role === 'beneficiary') {
-      navigate('/BeneficiaryDashboard'); // or /submit-request
-    }
+  /** Fired by <AuthForm> after successful login/register */
+  const handleSuccess = (userFromApi) => {
+    if (!userFromApi) return;
+    smartRedirect(userFromApi);
   };
 
   return (

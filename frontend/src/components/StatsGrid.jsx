@@ -2,12 +2,12 @@ import React from 'react';
 import { Coins, HeartHandshake, Trophy, TrendingUp, } from 'lucide-react';
 
 // StatsGrid Component
-const StatsGrid = ({ donorData, onStatClick }) => {
+const StatsGrid = ({ userStats, onStatClick }) => {
   const stats = [
     {
       icon: Coins,
-      title: "Total Donations",
-      value: `${donorData?.totalDonations || 0}`,
+      title: "Total Donated",
+      value: `${userStats?.totalDonations || 0}`,
       color: "emerald",
       gradient: "from-blue-400 via-emerald-200 to-green-400",
       bgGradient: "from-blue-100 via-emerald-100 to-green-100/50",
@@ -15,17 +15,17 @@ const StatsGrid = ({ donorData, onStatClick }) => {
     },
     {
       icon: HeartHandshake,
-      title: "Lives Impacted",
-      value: donorData?.beneficiaries || 0,
+      title: "Requests Made",
+      value: userStats?.totalRequests || 0,
       color: "emerald",
       gradient: "from-blue-400 via-emerald-200 to-green-400",
       bgGradient: "from-blue-100 via-emerald-100 to-green-100/50",
-      onClick: () => onStatClick('beneficiaries')
+      onClick: () => onStatClick('requests')
     },
     {
       icon: Trophy,
       title: "Your Rank",
-      value: `#${donorData?.rank || 0}`,
+      value: `#${userStats?.rank || '-'}`,
       color: "emerald",
       gradient: "from-blue-400 via-emerald-200 to-green-400",
       bgGradient: "from-blue-100 via-emerald-100 to-green-100/50",

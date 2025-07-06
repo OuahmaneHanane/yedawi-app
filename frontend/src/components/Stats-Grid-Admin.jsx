@@ -8,7 +8,7 @@ const StatsGrid = ({ donorData, onStatClick }) => {
       value: donorData.totalDonations,
       change: '+12%',
       changeType: 'positive',
-      icon: CheckCircle2,  // أيقونة مختلفة قليلاً
+      icon: CheckCircle2, 
       color: 'emerald'
     },
     {
@@ -16,7 +16,7 @@ const StatsGrid = ({ donorData, onStatClick }) => {
       value: donorData.beneficiaries,
       change: '+8%',
       changeType: 'positive',
-      icon: UserCheck,  // أيقونة مستخدم متقدمة
+      icon: UserCheck,  
       color: 'blue'
     },
     {
@@ -24,7 +24,7 @@ const StatsGrid = ({ donorData, onStatClick }) => {
       value: donorData.pending,
       change: '-3%',
       changeType: 'negative',
-      icon: Clock,  // نفس الأيقونة مناسبة هنا
+      icon: Clock,  
       color: 'amber'
     },
     {

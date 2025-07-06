@@ -7,7 +7,7 @@ import {
   UserCircle,
   ChevronDown,
   LogOut,
-  ShoppingBag  // <-- استوردت الأيقونة
+  ShoppingBag  
 } from 'lucide-react';
 
 const Sidebar = ({ adminData, activeTab, setActiveTab, isMobileOpen, setIsMobileOpen }) => {

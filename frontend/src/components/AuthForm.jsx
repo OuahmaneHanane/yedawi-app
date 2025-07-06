@@ -52,6 +52,12 @@ const AuthForm = ({ isLogin, onToggle, isAnimating, showToggle = true, onSuccess
         return alert('Passwords do not match');
       }
 
+      console.log("Registering with:", {
+  name: formData.fullName,
+  email: formData.email,
+  password: formData.password
+});
+
       const res = await axios.post('http://localhost:5000/api/auth/register', {
         name: formData.fullName,
         email: formData.email,

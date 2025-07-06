@@ -42,9 +42,9 @@ const Home = () => {
   return (
     <div className="min-h-screen font-sans text-gray-800">
       <header className="bg-white shadow fixed w-full z-50">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="container mx-auto px-10 py-4 flex justify-between items-center">
           <h1 className="text-3xl font-semibold flex items-center gap-2">
-            <HandHeart className="w-8 h-8 text-green-400" />
+            <HandHeart className="w-10 h-10 text-green-400" />
             Yedawi
           </h1>
 
@@ -98,7 +98,7 @@ const Home = () => {
           className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=60 height=60 viewBox=0 0 60 60 xmlns=http://www.w3.org/2000/svg%3E%3Cg fill=none fill-rule=evenodd%3E%3Cg fill=%23ffffff fill-opacity=0.05%3E%3Ccircle cx=30 cy=30 r=4/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-10"
         ></div>
 
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-20 relative z-10">
           <div className="grid lg:grid-cols-2 gap-8 items-center">
             <div className="text-center lg:text-left">
               <div className="inline-flex items-center bg-white/20 rounded-full px-4 py-2 mb-6 backdrop-blur-sm">
@@ -120,14 +120,14 @@ const Home = () => {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                <Link
-  to="/donate"
+  to="/login?redirect=/donate"
   className="group bg-white text-slate-800 px-8 py-4 rounded-full text-base font-semibold hover:bg-slate-100 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center"
 >
   Start Donating
   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
 </Link>
                 <Link
-  to="/request"
+  to="/login?redirect=/request"
   className="group border-2 border-white text-white px-8 py-4 rounded-full text-base font-semibold hover:bg-white hover:text-slate-800 transition-all transform hover:scale-105 flex items-center justify-center"
 >
   Need Help
@@ -136,7 +136,7 @@ const Home = () => {
               </div>
 
               {/* Trust Badges */}
-              <div className="flex items-center justify-center lg:justify-start gap-6 mt-4 text-white/80">
+              <div className="flex items-center justify-center lg:justify-start gap-6 mt-4 text-white pb-5">
                 <div className="flex items-center gap-2">
                   <Lock className="w-4 h-4" />
                   <span className="text-sm">Secure</span>
@@ -218,7 +218,7 @@ const Home = () => {
 
       {/* About Section */}
       <section id="about" className="py-16 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-40">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">About Yedawi</h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
@@ -413,7 +413,7 @@ const Home = () => {
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-25">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-2 mb-4">

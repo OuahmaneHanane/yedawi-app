@@ -7,6 +7,12 @@ import LoginRegisterPage from '../pages/LoginRegisterPage';
 import DonationPage from '../pages/user/DonationPage';
 import RequestPage from '../pages/user/RequestPage';
 import UserDashboard from '../pages/user/UserDashboard';
+import DashboardLayout from '../layouts/DashboardLayout';
+import MyDonations from '../pages/user/MyDonations';
+import MyRequests from '../pages/user/MyRequests';
+import Notifications from '../pages/user/NotificationsPage';
+import Profil from '../pages/user/profil';
+import Support from '../pages/Support';
 
 // import AdminDashboard from '../pages/admin/AdminDashboard';
 // import DashboardPage from '../pages/admin/DashboardPage';
@@ -17,11 +23,24 @@ import UserDashboard from '../pages/user/UserDashboard';
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Home />} /> 
+      <Route path="/" element={<Home />} />
       <Route path="/login" element={<LoginRegisterPage />} />
-      <Route path="/request" element={ <ProtectedRoute><RequestPage /></ProtectedRoute>} />
-      <Route path="/donate" element={<ProtectedRoute><DonationPage /></ProtectedRoute>} />      
-      <Route path="/mine" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
+
+      {/* Public pages inside protection */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/donate" element={<DonationPage />} />
+        <Route path="/request" element={<RequestPage />} />
+
+        {/* Protected Dashboard layout */}
+        <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route index element={<UserDashboard />} />
+          <Route path="donations" element={<MyDonations />} />
+          <Route path="requests" element={<MyRequests />} />
+          <Route path="notifications" element={<Notifications />} />
+          <Route path="profil" element={<Profil />} />
+          <Route path="support" element={<Support />} />
+        </Route>
+      </Route>
 
       {/* Nested admin routes */}
       {/* <Route path="/dashboardAdmin" element={<AdminDashboard />}>

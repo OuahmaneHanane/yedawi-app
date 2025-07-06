@@ -1,88 +1,74 @@
-import { Trophy, Medal, Star, Award } from 'lucide-react';
+import React from 'react';
+import { Heart, HandHelping, Clock, CheckCircle, XCircle } from 'lucide-react';
 import Card from './Card';
-import Typography from './Typography';
-import AchievementCard from './AchievementCard';
 
-const AchievementsSection = ({ achievements = [] }) => {
-  const getHeaderIcon = () => {
-    const iconCount = achievements.length;
-    if (iconCount >= 10) return Trophy;
-    if (iconCount >= 5) return Medal;
-    if (iconCount >= 3) return Award;
-    return Star;
+const RecentActivitySection = ({ activities }) => {
+  const getTypeIcon = (type) =>
+    type === 'donation' ? <Heart className="w-5 h-5 text-rose-600" /> : <HandHelping className="w-5 h-5 text-sky-600" />;
+
+  const getStatusIcon = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'completed':
+      case 'approved':
+        return <CheckCircle className="w-4 h-4 text-green-600" />;
+      case 'pending':
+        return <Clock className="w-4 h-4 text-yellow-500" />;
+      case 'rejected':
+      case 'declined':
+        return <XCircle className="w-4 h-4 text-red-500" />;
+      default:
+        return <Clock className="w-4 h-4 text-gray-400" />;
+    }
   };
 
-  const HeaderIcon = getHeaderIcon();
-  const hasAchievements = achievements && achievements.length > 0;
-
   return (
-<Card className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
-  {/* Add ml-4 here */}
-  <div className="ml-4">
-    {/* Header */}
-    <div className="flex items-center gap-3 mb-6">
-      <div className="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center">
-        <HeaderIcon className="w-5 h-5 text-emerald-600" />
-      </div>
-      <h3 className="text-lg font-semibold text-gray-900">
-        Achievements
-      </h3>
-      {hasAchievements && (
-        <span className="ml-auto inline-flex items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold px-3 py-1 select-none">
-          {achievements.length}
-        </span>
-      )}
-    </div>
+    <Card className="p-6 rounded-2xl shadow-md border border-gray-100 bg-white">
+      <h2 className="text-lg font-semibold text-gray-900 mb-6 flex items-center gap-2">
+        <Clock className="w-5 h-5 text-gray-500" />
+        Recent Activity
+      </h2>
 
-    {/* Achievements Grid */}
-    {hasAchievements ? (
-      <div className="relative">
-        {/* Subtle grid background pattern */}
-        <div className="absolute inset-0 opacity-5 bg-[radial-gradient(circle_at_1px_1px,rgb(0,0,0)_1px,transparent_0)] bg-[size:20px_20px]" />
-        
-        <div className="relative grid grid-cols-1 md:grid-cols-2 gap-4">
-          {achievements.map((achievement, index) => (
-            <div
-              key={index}
-              className="transform hover:scale-[1.02] transition-transform duration-200"
-              style={{
-                animationDelay: `${index * 100}ms`,
-                animation: 'fadeInUp 0.6s ease-out forwards'
-              }}
+      {activities.length === 0 ? (
+        <p className="text-gray-500 text-sm">No recent activity yet.</p>
+      ) : (
+        <div className="grid grid-cols-1 gap-4">
+          {activities.map((activity) => (
+            <Card
+              key={activity.id}
+              className="p-4 flex items-start gap-4 rounded-xl hover:shadow-lg transition-shadow duration-200"
             >
-              <AchievementCard {...achievement} />
-            </div>
+              {/* Icon */}
+              <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center shadow-inner">
+                {getTypeIcon(activity.type)}
+              </div>
+
+              {/* Content */}
+              <div className="flex-1">
+                <p className="text-sm text-gray-800 mb-1">
+                  {activity.type === 'donation' ? (
+                    <>
+                      Donated <span className="font-semibold">{activity.amount} MAD</span>{' '}
+                      {activity.name && <>to <span className="font-medium">{activity.name}</span></>}
+                      {activity.medicine && <> for <span className="italic">{activity.medicine}</span></>}
+                    </>
+                  ) : (
+                    <>
+                      Requested <span className="italic">{activity.medicine}</span>
+                    </>
+                  )}
+                </p>
+                <div className="flex items-center gap-2 text-xs text-gray-500">
+                  {getStatusIcon(activity.status)}
+                  <span className="capitalize">{activity.status}</span>
+                  <span className="ml-auto">{new Date(activity.createdAt).toLocaleDateString()}</span>
+                </div>
+              </div>
+            </Card>
           ))}
         </div>
-      </div>
-    ) : (
-      /* Empty state */
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <Award className="w-12 h-12 text-gray-300 mb-4" />
-        <Typography variant="body1" className="text-gray-500 mb-2">
-          No achievements yet
-        </Typography>
-        <Typography variant="caption" className="text-gray-400 max-w-xs">
-          Your accomplishments will appear here
-        </Typography>
-      </div>
-    )}
-  </div>
-
-  <style jsx>{`
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-  `}</style>
-</Card>
+      )}
+    </Card>
   );
 };
 
-export default AchievementsSection;
+export default RecentActivitySection;
