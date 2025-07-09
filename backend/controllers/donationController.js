@@ -1,37 +1,47 @@
 import Donation from '../models/Donation.js';
 import Notification from '../models/Notification.js';
-
+import { v4 as uuidv4 } from 'uuid';
 /* --------------------------------- CREATE --------------------------------- */
 // POST  /api/donations
 export const createDonation = async (req, res) => {
   try {
-    const { amount, method, tip = 0, donationId } = req.body;
-
-    // Prevent duplicate donation IDs (optional but recommended)
-    if (donationId) {
-      const exists = await Donation.findOne({ donationId });
-      if (exists) {
-        return res.status(400).json({ message: 'Duplicate donationId.' });
-      }
-    }
-
-    const newDonation = await Donation.create({
-      user: req.user._id,
-      fullName: req.user.name,
-      email: req.user.email,
-      phone: req.user.phone || '',
+    const {
+      fullName,
+      email,
+      phone,
       amount,
-      method,
       tip,
-      donationId,
-      status: 'pending',
-      isApproved: false,
+      method,
+      status,
+      transactionId,
+      recurring,
+      recurrenceType,
+    } = req.body;
+
+    const donation = new Donation({
+      user: req.user.id,  // make sure this is set by protect middleware
+      fullName,
+      email,
+      phone,
+      amount,
+      tip,
+      method,
+      status,
+      transactionId,
+      donationId: uuidv4(), // Generate a unique donation ID
+      recurring,
+      recurrenceType,
     });
 
-    res.status(201).json(newDonation);
-  } catch (err) {
-    console.error('Donation error:', err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    const saved = await donation.save();
+
+    res.status(201).json({
+      message: "Donation saved successfully",
+      donationId: saved._id,
+    });
+  } catch (error) {
+    console.error("Error in createDonation:", error);
+    res.status(500).json({ message: "Server error while saving donation" });
   }
 };
 

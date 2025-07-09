@@ -2,6 +2,7 @@ import express from 'express';
 import { connectDB } from './config/db.js';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import multer from 'multer'; 
 
 import authRoutes from './routes/authRoutes.js';
 import menuRoutes from './routes/userMenuRoutes.js';
@@ -27,11 +28,18 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
+app.use('/api/user', userRoutes);
 app.use('/api/user/donations', donationRoutes);
 app.use('/api/user/requests', requestRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api', menuRoutes);
+
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError || err.message.includes("Unsupported")) {
+    return res.status(400).json({ message: err.message });
+  }
+  next(err);
+});
 
 // app.listen(port, () =>{
 //     connectDB(),

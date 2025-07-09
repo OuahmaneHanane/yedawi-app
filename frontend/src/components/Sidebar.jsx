@@ -10,7 +10,7 @@ import {
 
 const Sidebar = ({user }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [stats, setStats] = useState({ donations: 0, requests: 0 });
+  const [stats, setStats] = useState({ notifications: 0});
   const location = useLocation();
 
 const getActiveTabFromPath = (pathname) => {
@@ -46,10 +46,10 @@ const getActiveTabFromPath = (pathname) => {
   ─────────────────────────────────── */
   const menuItems = [
     { id: 'dashboard',  icon: TrendingUp,   label: 'Dashboard' },
-    { id: 'donations',  icon: FolderHeart,  label: `My Donations (${stats.donations})` },
-    { id: 'requests',   icon: ClipboardList,label: `My Requests (${stats.requests})` },
+    { id: 'donations',  icon: FolderHeart,  label: 'My Donations' },
+    { id: 'requests',   icon: ClipboardList,label: 'My Requests' },
     { id: 'support',    icon: MessageCircle,label: 'Support' },
-    { id: 'notifications', icon: Bell,      label: 'Notifications' }
+    { id: 'notifications', icon: Bell,      label: `Notifications (${stats.notifications})` }
   ];
 console.log("Sidebar user:", user);
 

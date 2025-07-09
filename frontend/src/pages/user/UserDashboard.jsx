@@ -30,7 +30,7 @@ const UserDashboard = () => {
         if (!token) return;
 
         // Fetch user profile
-        const userRes = await axios.get('http://localhost:5000/api/users/me', {
+        const userRes = await axios.get('http://localhost:5000/api/user/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(userRes.data);
@@ -38,7 +38,7 @@ const UserDashboard = () => {
         // Fetch user donations and requests
         const [donationsRes, requestsRes] = await Promise.all([
           axios.get('http://localhost:5000/api/user/donations/my-donations', { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get('http://localhost:5000/api/user/requests/me', { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get('http://localhost:5000/api/user/requests/my-requests', { headers: { Authorization: `Bearer ${token}` } }),
         ]);
 
         // Update stats
@@ -99,6 +99,7 @@ setAchievements(dynamicAchievements);
     setShowNotification(true);
     setTimeout(() => setShowNotification(false), 3000);
   };
+if (!user) return <div>Loading...</div>;
 
   return (
     <div className="min-h-screen bg-gray-50 relative">
@@ -122,12 +123,9 @@ setAchievements(dynamicAchievements);
         />
 
         <StatsGrid
-          donationStats={{
-            totalDonated: userStats.totalDonations,
-            requestsMade: userStats.totalRequests,
-          }}
-          onStatClick={(type) => console.log(`Clicked on ${type} stat`)}
-        />
+  userStats={userStats} 
+  onStatClick={(type) => console.log(`Clicked on ${type} stat`)}
+/>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <AchievementsSection achievements={achievements} />

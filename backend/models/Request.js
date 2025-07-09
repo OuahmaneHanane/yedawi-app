@@ -13,20 +13,24 @@ const requestSchema = new mongoose.Schema(
     },
 
     // Requester Info
-    fullName: { type: String },
-    email: { type: String },
+    fullName: { type: String, required: true },
+    email: {
+      type: String,
+      required: true,
+      match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address'],
+    },
     phone: { type: String },
-    address: { type: String },
-    nationalId: { type: String },
+    address: { type: String, required: true },
+    nationalId: { type: String, required: true },
     age: { type: Number },
 
     // Beneficiary Info
-    beneficiaryName: { type: String },
-    beneficiaryAge: { type: Number },
-    relationship: { type: String },
+    beneficiaryName: { type: String, required: true },
+    beneficiaryAge: { type: Number, required: true },
+    relationship: { type: String, required: true },
 
     // Assistance Details
-    assistanceType: { type: String },
+    assistanceType: { type: String, required: true },
     notes: { type: String },
 
     // Status & Processing

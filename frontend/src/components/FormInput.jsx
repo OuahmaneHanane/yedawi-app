@@ -9,8 +9,10 @@ const FormInput = ({
   placeholder,
   required = false,
   icon,
+  disabled = false,
+  errorMessage,
 }) => (
-  <div className="space-y-2 relative">
+  <div className="space-y-2 relative w-full min-w-[250px]">
     <label className="block text-sm font-medium text-gray-700">
       {label}
     </label>
@@ -23,9 +25,13 @@ const FormInput = ({
         onChange={onChange}
         placeholder={placeholder}
         required={required}
-        className={`w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg 
-          focus:ring-2 focus:ring-blue-500 focus:border-transparent 
-          transition-all duration-200 bg-white/80 backdrop-blur-sm`}
+        disabled={disabled}
+        readOnly={disabled}
+        className={`w-full px-4 py-3 pr-10 border rounded-lg
+          transition-all duration-200 bg-white/80 backdrop-blur-sm
+          ${disabled ? "bg-gray-100 cursor-not-allowed" : ""}
+          ${errorMessage ? "border-red-600 bg-red-50" : "border-gray-300"}
+        `}
       />
 
       {icon && (
@@ -34,6 +40,10 @@ const FormInput = ({
         </div>
       )}
     </div>
+
+    {errorMessage && (
+      <p className="text-sm text-red-600 mt-1">{errorMessage}</p>
+    )}
   </div>
 );
 

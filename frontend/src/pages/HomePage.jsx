@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   HandHeart,
+  User,
   Info,
   Globe2,
   ShieldCheck,
-  MessageCircle, 
-  PhoneCall, 
+  MessageCircle,
+  PhoneCall,
   MapPin,
   Mail,
   Heart,
@@ -26,16 +27,27 @@ import {
   TrendingUp,
   Clock,
   DollarSign
-} from 'lucide-react'; 
-import { SiX } from "react-icons/si";
+} from 'lucide-react';
+import { SiX } from 'react-icons/si';
 
 const Home = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [email, setEmail] = useState('');
+  const [role, setRole] = useState(null);
+
+  // ✅ Login state & role
+  const isLoggedIn = Boolean(localStorage.getItem('token'));
+const profilePath = role === 'admin' ? '/dashboardAdmin' : '/dashboard';
+
+useEffect(() => {
+  const storedRole = localStorage.getItem('role');
+  setRole(storedRole);
+}, []);
+
 
   const handleNewsletterSubmit = (e) => {
     e.preventDefault();
-    alert('Thank you for subscribing! We\'ll keep you updated on our impact.');
+    alert("Thank you for subscribing! We'll keep you updated on our impact.");
     setEmail('');
   };
 
@@ -57,12 +69,25 @@ const Home = () => {
               <a href="#contact" className="text-gray-700 hover:text-green-400 transition-colors">Contact</a>
               <a href="/impact" className="text-gray-700 hover:text-green-400 transition-colors">Impact</a>
             </nav>
-            <a
-              href="/login"
-              className="ml-4 bg-green-400 text-white text-sm px-6 py-2 rounded-full hover:bg-green-500 transition-all transform hover:scale-105 shadow-md"
-            >
-              Login
-            </a>
+
+            {/* Conditional Login/Profile Icon */}
+            {isLoggedIn ? (
+              <Link
+                to={profilePath}
+                className="ml-4 bg-green-400 text-white p-2 rounded-full hover:bg-green-500 transition-all transform hover:scale-105 shadow-md flex items-center justify-center"
+                aria-label="User Profile"
+                title="Profile"
+              >
+                <User className="w-6 h-6" />
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="ml-4 bg-green-400 text-white text-sm px-6 py-2 rounded-full hover:bg-green-500 transition-all transform hover:scale-105 shadow-md"
+              >
+                Login
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -79,12 +104,25 @@ const Home = () => {
             <a href="#how-it-works" className="block text-gray-700 py-2">How It Works</a>
             <a href="#contact" className="block text-gray-700 py-2">Contact</a>
             <a href="/impact" className="block text-gray-700 py-2">Impact</a>
-            <a
-              href="/login"
-              className="inline-block mt-2 bg-green-400 text-white px-4 py-2 rounded-full text-sm hover:bg-green-500 transition"
-            >
-              Login
-            </a>
+
+            {/* Mobile Conditional Profile/Login */}
+            {isLoggedIn ? (
+              <Link
+                to={profilePath}
+                className="inline-block mt-2 bg-green-400 text-white px-4 py-2 rounded-full text-sm hover:bg-green-500 transition flex items-center justify-center"
+                aria-label="User Profile"
+                title="Profile"
+              >
+                <User className="w-5 h-5" />
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="inline-block mt-2 bg-green-400 text-white px-4 py-2 rounded-full text-sm hover:bg-green-500 transition"
+              >
+                Login
+              </Link>
+            )}
           </div>
         )}
       </header>

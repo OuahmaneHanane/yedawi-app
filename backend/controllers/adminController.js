@@ -44,7 +44,7 @@ export const approveRequest = async (req, res) => {
 
     await Notification.create({
       user: request.user,
-      message: `✅ Your request was approved. Pharmacy code: ${code} (valid for 7 days).`,
+      message: ` Your request was approved. Pharmacy code: ${code} (valid for 7 days).`,
     });
 
     res.json({ message: 'Request approved', code });
@@ -65,7 +65,7 @@ export const rejectRequest = async (req, res) => {
 
     await Notification.create({
       user: request.user,
-      message: `❌ Your request was rejected by the admin.`,
+      message: ` Your request was rejected by the admin.`,
     });
 
     res.json({ message: 'Request rejected' });

@@ -1,7 +1,8 @@
 // src/routes/AppRoutes.jsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import ProtectedRoute from '../components/ProtectedRoute' 
+import ProtectedRoute from '../components/ProtectedRoute';
+import UnauthorizedPage from '../pages/UnauthorizedPage';
 import Home from '../pages/HomePage';
 import LoginRegisterPage from '../pages/LoginRegisterPage';
 import DonationPage from '../pages/user/DonationPage';
@@ -14,11 +15,15 @@ import Notifications from '../pages/user/NotificationsPage';
 import Profil from '../pages/user/profil';
 import Support from '../pages/Support';
 
-// import AdminDashboard from '../pages/admin/AdminDashboard';
-// import DashboardPage from '../pages/admin/DashboardPage';
-// import UsersPage from '../pages/admin/UsersPage';
-// import PharmaciesPage from '../pages/admin/PharmaciesPage';
-// import RequestsPage from '../pages/admin/RequestsPage';
+
+import AdminLayout from '../layouts/AdminLayout';
+import DashboardContent from '../pages/admin/DashboardContent';
+import UsersPage from '../pages/admin/UsersPage';
+import PharmaciesPage from '../pages/admin/PharmaciesPage';
+import RequestsManagement from '../pages/admin/RequestsManagement';
+
+
+
 
 const AppRoutes = () => {
   return (
@@ -27,7 +32,7 @@ const AppRoutes = () => {
       <Route path="/login" element={<LoginRegisterPage />} />
 
       {/* Public pages inside protection */}
-      <Route element={<ProtectedRoute />}>
+      <Route element={<ProtectedRoute allowedRoles={['user']} />}>
         <Route path="/donate" element={<DonationPage />} />
         <Route path="/request" element={<RequestPage />} />
 
@@ -42,12 +47,25 @@ const AppRoutes = () => {
         </Route>
       </Route>
 
-      {/* Nested admin routes */}
-      {/* <Route path="/dashboardAdmin" element={<AdminDashboard />}>
-      <Route index element={<DashboardPage />} />
-      <Route path="users" element={<UsersPage />} />
-      <Route path="pharmacies" element={<PharmaciesPage />} />
-      <Route path="requests" element={<RequestsPage />} /></Route> */}
+      {/* Admin Routes */}
+      <Route
+        path="/dashboardAdmin"
+        element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<DashboardContent />} />
+        <Route path="users" element={<UsersPage />} />
+        <Route path="pharmacies" element={<PharmaciesPage />} />
+        <Route path="requests" element={<RequestsManagement />} />
+      </Route>
+
+      {/* Optional: 404 Not Found route */}
+      <Route path="*" element={<h1>404 - Page Not Found</h1>} />
+
+      <Route path="/unauthorized" element={<UnauthorizedPage />} />
     </Routes>
   );
 };

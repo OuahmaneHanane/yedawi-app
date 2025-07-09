@@ -47,8 +47,7 @@ const RecentActivitySection = ({ activities }) => {
                 <p className="text-sm text-gray-800 mb-1">
                   {activity.type === 'donation' ? (
                     <>
-                      Donated <span className="font-semibold">{activity.amount} MAD</span>{' '}
-                      {activity.name && <>to <span className="font-medium">{activity.name}</span></>}
+                      Donated <span className="font-semibold">{activity.amount} USD</span>{' '}
                       {activity.medicine && <> for <span className="italic">{activity.medicine}</span></>}
                     </>
                   ) : (

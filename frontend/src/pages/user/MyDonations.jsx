@@ -12,7 +12,7 @@ const MyDonations = () => {
     const fetchDonations = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:5000/api/user/my-donations", {
+        const response = await axios.get("http://localhost:5000/api/user/donations/my-donations", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setDonations(response.data);
@@ -46,7 +46,7 @@ const MyDonations = () => {
               className="bg-white shadow-sm rounded-lg p-4 border"
             >
               <p>
-                <strong>Amount:</strong> {donation.amount} MAD
+                <strong>Amount:</strong> {donation.amount} USD
               </p>
               <p>
                 <strong>Status:</strong> {donation.status}

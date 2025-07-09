@@ -26,7 +26,7 @@ const donationSchema = new mongoose.Schema({
   },
 
   transactionId: { type: String },                // PayPal/Stripe ID if applicable
-  donationId: { type: String, unique: true },     // for receipt display (custom ID)
+  donationId: { type: String},     // for receipt display (custom ID)
 
   isApproved: { type: Boolean, default: false },  // can be used for admin validation
 }, { timestamps: true });

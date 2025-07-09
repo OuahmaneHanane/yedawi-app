@@ -30,7 +30,7 @@ const ReceiptBox = ({ donationID, email, amount,method,tip,total=amount, fullNam
         {/* Footer */}
         <div className="text-center border-t border-dashed pt-2 mt-2">
           <p className="text-base font-semibold tracking-wide">
-            THANK YOU{fullName}
+            THANK YOU {fullName}
           </p>
           <div className="mt-2 h-6 bg-black w-full rounded-sm" />
         </div>

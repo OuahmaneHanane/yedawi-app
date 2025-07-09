@@ -1,36 +1,36 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   TrendingUp,
   FileText,
   Users,
+  ShoppingBag,
+  HandHeart,
+  ChevronDown,
   ShieldCheck,
   UserCircle,
-  ChevronDown,
   LogOut,
-  ShoppingBag  
 } from 'lucide-react';
 
-const Sidebar = ({ adminData, activeTab, setActiveTab, isMobileOpen, setIsMobileOpen }) => {
+const SidebarAdmin = ({
+  adminData,
+  activeTab,
+  setActiveTab,
+  isMobileOpen,
+  setIsMobileOpen,
+}) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const navigate = useNavigate();
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: TrendingUp },
     { id: 'requests', label: 'Requests', icon: FileText },
     { id: 'users', label: 'Users', icon: Users },
-    { id: 'pharmacies', label: 'Pharmacies', icon: ShoppingBag },  // <-- أضفت هذا السطر
+    { id: 'pharmacies', label: 'Pharmacies', icon: ShoppingBag },
   ];
-
-  const handleProfileClick = () => {
-    setIsProfileOpen(!isProfileOpen);
-  };
-
-  const handleLogout = () => {
-    console.log('Logging out...');
-  };
 
   return (
     <>
-      {/* Mobile Overlay */}
       {isMobileOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-30 z-40 lg:hidden"
@@ -38,23 +38,24 @@ const Sidebar = ({ adminData, activeTab, setActiveTab, isMobileOpen, setIsMobile
         />
       )}
 
-      {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-100 flex flex-col font-poppins z-50 transform transition-transform duration-300 lg:translate-x-0 ${
+        className={`fixed top-0 left-0 h-full w-60 bg-white border-r border-gray-100 flex flex-col font-poppins z-50 transform transition-transform duration-300 lg:translate-x-0 ${
           isMobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        {/* Logo/Header */}
-        <div className="p-6 border-b border-gray-50">
-          <div className="flex items-center gap-3">
+          {/* <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-emerald-400 rounded-xl flex items-center justify-center shadow-sm">
               <ShieldCheck className="w-4 h-4 text-white" />
             </div>
             <span className="text-xl font-semibold text-gray-900 tracking-tight">Yedawi</span>
-          </div>
-        </div>
+          </div> */}
+           {/* Logo */}
+      <div className="p-8 border-b border-gray-50">
+        <Link to="/" className="flex items-center gap-2 text-3xl font-semibold hover:opacity-90 transition">
+  <HandHeart className="w-10 h-10 text-green-400" /> Yedawi
+</Link>
+      </div>
 
-        {/* Navigation */}
         <nav className="flex-1 p-4">
           <div className="space-y-1">
             {menuItems.map((item) => (
@@ -63,9 +64,14 @@ const Sidebar = ({ adminData, activeTab, setActiveTab, isMobileOpen, setIsMobile
                 onClick={() => {
                   setActiveTab(item.id);
                   setIsMobileOpen(false);
+
+                  if (item.id === 'dashboard') {
+                    navigate('/dashboardAdmin');
+                  } else {
+                    navigate(`/dashboardAdmin/${item.id}`);
+                  }
                 }}
-                className={`
-                  w-full group flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl
+                className={`w-full group flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl
                   transition-all duration-200 ease-out
                   ${
                     activeTab === item.id
@@ -87,10 +93,9 @@ const Sidebar = ({ adminData, activeTab, setActiveTab, isMobileOpen, setIsMobile
           </div>
         </nav>
 
-        {/* Admin Profile */}
         <div className="p-4 border-t border-gray-50 relative">
           <button
-            onClick={handleProfileClick}
+            onClick={() => setIsProfileOpen(!isProfileOpen)}
             className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors group"
           >
             <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
@@ -111,15 +116,14 @@ const Sidebar = ({ adminData, activeTab, setActiveTab, isMobileOpen, setIsMobile
 
           {isProfileOpen && (
             <div className="absolute bottom-full left-4 right-4 mb-2 bg-white border border-gray-200 rounded-xl shadow-lg py-2 z-10">
-              <button
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                <UserCircle className="w-4 h-4 text-gray-500" />
-                View Profile
-              </button>
               <div className="border-t border-gray-100 my-1" />
               <button
-                onClick={handleLogout}
+                onClick={() =>{
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    navigate('/login');
+                    setIsProfileOpen(false);
+                } }
                 className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
               >
                 <LogOut className="w-4 h-4" />
@@ -133,4 +137,4 @@ const Sidebar = ({ adminData, activeTab, setActiveTab, isMobileOpen, setIsMobile
   );
 };
 
-export default Sidebar;
+export default SidebarAdmin;

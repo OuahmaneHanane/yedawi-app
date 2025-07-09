@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation  } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import AuthForm from '../components/AuthForm';
 import AuthImagePanel from '../components/AuthImagePanel';
 import { getStoredUser } from '../utils/auth'; // your helper
-
 
 const LoginRegisterPage = () => {
   const navigate = useNavigate();
   const { search } = useLocation();
 
-    // ?redirect=/donate
+  // ?redirect=/donate
   const redirectTo = new URLSearchParams(search).get('redirect');
   const [isLogin, setIsLogin] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
 
-   /** Decides where the user should finally land. */
+  /** ✅ Updated: Decides where the user should finally land. */
   const smartRedirect = (user) => {
     // 1️⃣ honour a redirect query *unless* it's missing or just "/dashboard"
     if (redirectTo && redirectTo !== '/dashboard') {
@@ -24,7 +23,7 @@ const LoginRegisterPage = () => {
 
     // 2️⃣ otherwise role‑based dashboards
     if (user?.role === 'admin') {
-      navigate('/admin/dashboard', { replace: true });
+      navigate('/dashboardAdmin', { replace: true }); // ✅ Updated path
     } else {
       navigate('/dashboard', { replace: true });
     }
@@ -34,7 +33,8 @@ const LoginRegisterPage = () => {
   useEffect(() => {
     const existingUser = getStoredUser();
     if (existingUser) smartRedirect(existingUser);
-  }, [redirectTo]);     // eslint‑disable‑line react-hooks/exhaustive-deps
+  }, [redirectTo]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleToggle = () => {
     if (isAnimating) return;
 
@@ -53,33 +53,36 @@ const LoginRegisterPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4 ">
-
       <div className="relative w-full max-w-5xl bg-white rounded-2xl shadow-2xl overflow-hidden">
         <div className="flex flex-col md:flex-row w-full max-w-6xl min-h-[650px] bg-white rounded-2xl shadow-2xl overflow-hidden">
           {/* Form Panel */}
-          <div className={`
-            flex-1 flex items-center justify-center p-8 ${isLogin ? 'py-8' : 'py-10'}
-           relative z-20 bg-white
-           transition-transform duration-500 ease-in-out
-            ${isAnimating ? 'scale-95 opacity-80' : 'scale-100 opacity-100'}
-            ${isLogin ? 'order-1' : 'order-2'}
-          `}>
+          <div
+            className={`
+              flex-1 flex items-center justify-center p-8 ${isLogin ? 'py-8' : 'py-10'}
+              relative z-20 bg-white
+              transition-transform duration-500 ease-in-out
+              ${isAnimating ? 'scale-95 opacity-80' : 'scale-100 opacity-100'}
+              ${isLogin ? 'order-1' : 'order-2'}
+            `}
+          >
             <AuthForm
-             isLogin={isLogin} 
-             onToggle={handleToggle} 
-             isAnimating={isAnimating} 
-             showToggle={true}
-            onSuccess={handleSuccess}
+              isLogin={isLogin}
+              onToggle={handleToggle}
+              isAnimating={isAnimating}
+              showToggle={true}
+              onSuccess={handleSuccess}
             />
           </div>
 
           {/* Image Panel */}
-          <div className={`
-            w-full md:w-1/2 relative overflow-hidden
-            transition-transform duration-500 ease-in-out
-            ${isAnimating ? 'scale-95 opacity-80' : 'scale-100 opacity-100'}
-            ${isLogin ? 'order-2' : 'order-1'}
-          `}>
+          <div
+            className={`
+              w-full md:w-1/2 relative overflow-hidden
+              transition-transform duration-500 ease-in-out
+              ${isAnimating ? 'scale-95 opacity-80' : 'scale-100 opacity-100'}
+              ${isLogin ? 'order-2' : 'order-1'}
+            `}
+          >
             <AuthImagePanel isLogin={isLogin} />
           </div>
 

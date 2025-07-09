@@ -8,6 +8,9 @@ import Notification from '../models/Notification.js';
  */
 export const createRequest = async (req, res) => {
   try {
+
+    console.log('Received request body:', req.body);
+    console.log('Received file:', req.file);
     const userId = req.user._id;
 
     /* ----- 1. Guard: supporting document required ----- */
@@ -70,7 +73,10 @@ export const createRequest = async (req, res) => {
       message: 'Your request has been submitted and is awaiting approval.',
     });
 
-    res.status(201).json(newRequest);
+    res.status(201).json({
+      message: 'Request submitted successfully',
+      requestId: newRequest._id,
+    });
   } catch (err) {
     console.error('Create request error:', err);
     res.status(500).json({ message: 'Server error', error: err.message });

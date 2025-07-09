@@ -13,7 +13,7 @@ const MyRequests = () => {
     const fetchRequests = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5000/api/user/requests/me", {
+        const res = await axios.get("http://localhost:5000/api/user/requests/my-requests", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setRequests(res.data);
