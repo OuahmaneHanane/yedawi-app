@@ -2,7 +2,8 @@ import express from 'express';
 import {
   createRequest,
   getUserRequests,
-  getAllRequests,
+  getAllRequests,  
+  updateRequestStatus,
 } from '../controllers/requestController.js';
 import { protect, authorizeRoles } from '../middleware/authMiddleware.js';
 import upload from '../middleware/uploadMiddleware.js';
@@ -17,5 +18,6 @@ router.get('/my-requests', protect, getUserRequests);
 
 // Admin: view all requests
 router.get('/all', protect, authorizeRoles('admin'), getAllRequests);
+router.put('/:id', protect, authorizeRoles('admin'), updateRequestStatus); // or similar
 
 export default router;

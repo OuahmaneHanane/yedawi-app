@@ -10,6 +10,8 @@ import userRoutes from './routes/userRoutes.js';
 import donationRoutes from './routes/donationRoutes.js';
 import requestRoutes from './routes/requestRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
+
 
 
 dotenv.config();
@@ -33,6 +35,8 @@ app.use('/api/user/donations', donationRoutes);
 app.use('/api/user/requests', requestRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api', menuRoutes);
+app.use('/api/notifications', notificationRoutes);
+
 
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError || err.message.includes("Unsupported")) {

@@ -35,13 +35,24 @@ const Home = () => {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState(null);
 
-  // ✅ Login state & role
+  //  Login state & role
   const isLoggedIn = Boolean(localStorage.getItem('token'));
-const profilePath = role === 'admin' ? '/dashboardAdmin' : '/dashboard';
+  const profilePath = role === 'admin' ? '/dashboardAdmin' : role === 'user' ? '/dashboard' : '/login';
 
 useEffect(() => {
-  const storedRole = localStorage.getItem('role');
-  setRole(storedRole);
+  const storedUserStr = localStorage.getItem('user');
+  if (storedUserStr) {
+    try {
+      const storedUser = JSON.parse(storedUserStr);
+      setRole(storedUser.role);
+      console.log('Role loaded:', storedUser.role);
+    } catch (err) {
+      console.error('Failed to parse user from localStorage', err);
+      setRole(null);
+    }
+  } else {
+    setRole(null);
+  }
 }, []);
 
 
@@ -70,24 +81,24 @@ useEffect(() => {
               <a href="/impact" className="text-gray-700 hover:text-green-400 transition-colors">Impact</a>
             </nav>
 
-            {/* Conditional Login/Profile Icon */}
-            {isLoggedIn ? (
-              <Link
-                to={profilePath}
-                className="ml-4 bg-green-400 text-white p-2 rounded-full hover:bg-green-500 transition-all transform hover:scale-105 shadow-md flex items-center justify-center"
-                aria-label="User Profile"
-                title="Profile"
-              >
-                <User className="w-6 h-6" />
-              </Link>
-            ) : (
-              <Link
-                to="/login"
-                className="ml-4 bg-green-400 text-white text-sm px-6 py-2 rounded-full hover:bg-green-500 transition-all transform hover:scale-105 shadow-md"
-              >
-                Login
-              </Link>
-            )}
+                      {isLoggedIn && role ? (
+            <Link
+              to={profilePath}
+              className="ml-4 bg-green-400 text-white p-2 rounded-full hover:bg-green-500 transition-all transform hover:scale-105 shadow-md flex items-center justify-center"
+              aria-label="User Profile"
+              title="Profile"
+            >
+              <User className="w-6 h-6" />
+            </Link>
+          ) : !isLoggedIn ? (
+            <Link
+              to="/login"
+              className="ml-4 bg-green-400 text-white text-sm px-6 py-2 rounded-full hover:bg-green-500 transition-all transform hover:scale-105 shadow-md"
+            >
+              Login
+            </Link>
+          ) : null}
+
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -109,7 +120,7 @@ useEffect(() => {
             {isLoggedIn ? (
               <Link
                 to={profilePath}
-                className="inline-block mt-2 bg-green-400 text-white px-4 py-2 rounded-full text-sm hover:bg-green-500 transition flex items-center justify-center"
+                className="inline-flex mt-2 bg-green-400 text-white px-4 py-2 rounded-full text-sm hover:bg-green-500 transition  items-center justify-center"
                 aria-label="User Profile"
                 title="Profile"
               >

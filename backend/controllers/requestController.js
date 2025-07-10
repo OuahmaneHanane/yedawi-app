@@ -117,6 +117,39 @@ export const getAllRequests = async (req, res) => {
   }
 };
 
+export const updateRequestStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    const request = await Request.findById(req.params.id);
+    if (!request) return res.status(404).json({ message: 'Request not found' });
+
+    request.status = status;
+
+    if (status === 'approved') {
+      request.approvedAt = new Date();
+    }
+
+    const updated = await request.save();
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+export const deleteRequest = async (req, res) => {
+  try {
+    const request = await Request.findById(req.params.id);
+    if (!request) return res.status(404).json({ message: 'Request not found' });
+
+    await request.deleteOne();
+
+    res.json({ message: 'Request deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
 /**
  * GET /api/notifications
  * Fetch notifications for the authenticated user

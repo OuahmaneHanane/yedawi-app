@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Bell, LogOut, ShieldCheck, Menu } from 'lucide-react';
 
 const AdminHeader = ({ adminName = "Admin", onMenuClick }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
-  // جلب التنبيهات من backend
+  const token = localStorage.getItem('token');
+
   const fetchNotifications = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/notifications', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      const res = await axios.get('http://localhost:5000/api/notifications', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-      if (!res.ok) throw new Error('Failed to fetch notifications');
-      const data = await res.json();
-      setNotifications(data);
+      setNotifications(res.data);
     } catch (error) {
       console.error('Error fetching notifications:', error);
     }
@@ -27,14 +29,17 @@ const AdminHeader = ({ adminName = "Admin", onMenuClick }) => {
 
   const markAsRead = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/notifications/${id}/read`, {
-        method: 'PUT',
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
-      if (!res.ok) throw new Error('Failed to mark notification as read');
-      // حدث حالة التنبيهات محليًا
-      setNotifications(prev =>
-        prev.map(n => n._id === id ? { ...n, read: true } : n)
+      await axios.put(
+        `http://localhost:5000/api/notifications/${id}/read`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setNotifications((prev) =>
+        prev.map((n) => (n._id === id ? { ...n, read: true } : n))
       );
     } catch (error) {
       console.error('Error marking notification as read:', error);
@@ -44,7 +49,7 @@ const AdminHeader = ({ adminName = "Admin", onMenuClick }) => {
   return (
     <div
       className="font-['Poppins',sans-serif]"
-      style={{ marginTop: '1.5rem', marginLeft: '1.5rem', marginRight: '1.5rem' }}
+      style={{ marginTop: '2rem', marginLeft: '1.5rem', marginRight: '1.5rem' }}
     >
       <header className="flex justify-between items-center bg-white border border-gray-200 p-3 rounded-2xl mb-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
         <div className="flex items-center gap-3">
@@ -84,59 +89,56 @@ const AdminHeader = ({ adminName = "Admin", onMenuClick }) => {
             </button>
 
             {showNotifications && (
-  <div className="
-    absolute right-0 top-12
-    w-full max-w-xs max-h-60
-    bg-white border border-gray-200
-    rounded-2xl shadow-2xl z-50
-    overflow-hidden
-  ">
-    <div className="p-3 border-b border-gray-100">
-      <h3 className="text-sm font-semibold text-gray-900 tracking-wide">Notifications</h3>
-    </div>
-    <div className="max-h-56 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-emerald-300">
-      {notifications.length === 0 ? (
-        <div className="p-4 text-center text-gray-400 italic text-sm">
-          No notifications
-        </div>
-      ) : (
-        notifications.map(notification => (
-          <div 
-            key={notification._id}
-            className={`
-              p-3 border-b border-gray-100 flex items-start gap-3 cursor-pointer
-              ${!notification.read ? 'bg-emerald-50' : 'hover:bg-gray-50'}
-              transition-colors duration-200
-              rounded-lg
-            `}
-            onClick={() => markAsRead(notification._id)}
-            title={notification.message}
-          >
-            <span className={`mt-1 w-3 h-3 rounded-full
-              ${notification.type === 'success' ? 'bg-green-500' : 
-                notification.type === 'warning' ? 'bg-yellow-400' : 
-                'bg-blue-400'}`}
-            />
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-gray-900 truncate">
-                {notification.title}
-              </p>
-              <p className="text-xs text-gray-600 mt-0.5 line-clamp-2">
-                {notification.message}
-              </p>
-              <p className="text-[10px] text-gray-400 mt-1">
-                {new Date(notification.createdAt).toLocaleString()}
-              </p>
-            </div>
-          </div>
-          ))
-        
+              <div
+                className="
+                  absolute right-0 top-12
+                  w-full max-w-xs max-h-60
+                  bg-white border border-gray-200
+                  rounded-2xl shadow-2xl z-50
+                  overflow-hidden
+                "
+              >
+                <div className="p-3 border-b border-gray-100">
+                  <h3 className="text-sm font-semibold text-gray-900 tracking-wide">Notifications</h3>
+                </div>
+                <div className="max-h-56 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-emerald-300">
+                  {notifications.length === 0 ? (
+                    <div className="p-4 text-center text-gray-400 italic text-sm">No notifications</div>
+                  ) : (
+                    notifications.map((notification) => (
+                      <div
+                        key={notification._id}
+                        className={`
+                          p-3 border-b border-gray-100 flex items-start gap-3 cursor-pointer
+                          ${!notification.read ? 'bg-emerald-50' : 'hover:bg-gray-50'}
+                          transition-colors duration-200
+                          rounded-lg
+                        `}
+                        onClick={() => markAsRead(notification._id)}
+                        title={notification.message}
+                      >
+                        <span
+                          className={`mt-1 w-3 h-3 rounded-full
+                            ${
+                              notification.type === 'success'
+                                ? 'bg-green-500'
+                                : notification.type === 'warning'
+                                ? 'bg-yellow-400'
+                                : 'bg-blue-400'
+                            }`}
+                        />
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold text-gray-900 truncate">{notification.title}</p>
+                          <p className="text-xs text-gray-600 mt-0.5 line-clamp-2">{notification.message}</p>
+                          <p className="text-[10px] text-gray-400 mt-1">{new Date(notification.createdAt).toLocaleString()}</p>
+                        </div>
+                      </div>
+                    ))
                   )}
                 </div>
               </div>
             )}
           </div>
-
         </div>
       </header>
     </div>
