@@ -1,6 +1,6 @@
-// controllers/requestController.js
 import Request from '../models/Request.js';
 import Notification from '../models/Notification.js';
+import User from '../models/User.js';
 
 /**
  * POST /api/requests
@@ -8,7 +8,6 @@ import Notification from '../models/Notification.js';
  */
 export const createRequest = async (req, res) => {
   try {
-
     console.log('Received request body:', req.body);
     console.log('Received file:', req.file);
     const userId = req.user._id;
@@ -18,17 +17,21 @@ export const createRequest = async (req, res) => {
       return res.status(400).json({ message: 'Supporting document is required.' });
     }
 
-    /* ----- 2. Enforce 3‑per‑month limit (pending + approved only) ----- */
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    /* ----- 2. Enforce 3‑per‑month limit ONLY for beneficiaries ----- */
+    if (req.user.role === 'beneficiary') {
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
 
-    const recentCount = await Request.countDocuments({
-      user: userId,
-      status: { $in: ['pending', 'approved'] },
-      submittedAt: { $gte: thirtyDaysAgo },
-    });
+      const recentCount = await Request.countDocuments({
+        user: userId,
+        status: { $in: ['pending', 'approved'] },
+        submittedAt: { $gte: startOfMonth },
+      });
 
-    if (recentCount >= 3) {
-      return res.status(403).json({ message: 'Monthly request limit (3) reached.' });
+      if (recentCount >= 3) {
+        return res.status(403).json({ message: 'Monthly request limit (3) reached.' });
+      }
     }
 
     /* ----- 3. Build request payload ----- */
@@ -72,6 +75,15 @@ export const createRequest = async (req, res) => {
       user: userId,
       message: 'Your request has been submitted and is awaiting approval.',
     });
+
+    /* ----- 6. Notify admin ----- */
+    const adminUser = await User.findOne({ role: 'admin' });
+    if (adminUser) {
+      await Notification.create({
+        user: adminUser._id,
+        message: `${req.user.name || fullName} submitted a new request.`,
+      });
+    }
 
     res.status(201).json({
       message: 'Request submitted successfully',

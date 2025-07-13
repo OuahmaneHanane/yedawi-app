@@ -11,7 +11,6 @@ const requestSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
     // Requester Info
     fullName: { type: String, required: true },
     email: {

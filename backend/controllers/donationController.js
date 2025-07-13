@@ -1,6 +1,8 @@
 import Donation from '../models/Donation.js';
 import Notification from '../models/Notification.js';
+import User from '../models/User.js'; // Import User model to find admin
 import { v4 as uuidv4 } from 'uuid';
+
 /* --------------------------------- CREATE --------------------------------- */
 // POST  /api/donations
 export const createDonation = async (req, res) => {
@@ -19,7 +21,7 @@ export const createDonation = async (req, res) => {
     } = req.body;
 
     const donation = new Donation({
-      user: req.user.id,  // make sure this is set by protect middleware
+      user: userId = req.user._id,  // make sure this is set by protect middleware
       fullName,
       email,
       phone,
@@ -34,6 +36,15 @@ export const createDonation = async (req, res) => {
     });
 
     const saved = await donation.save();
+
+    // Notify admin about the new donation
+    const adminUser = await User.findOne({ role: 'admin' });
+    if (adminUser) {
+      await Notification.create({
+        user: adminUser._id,
+        message: `${req.user.name || fullName} just made a donation of $${amount}`,
+      });
+    }
 
     res.status(201).json({
       message: "Donation saved successfully",
@@ -84,7 +95,7 @@ export const markDonationAsUsed = async (req, res) => {
     await Notification.create({
       user: donation.user._id,
       message:
-        '🎉 Thank you! Your donation has been used to help someone in need.',
+        'Thank you! Your donation has been used to help someone in need.',
     });
 
     res.json({

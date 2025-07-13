@@ -2,6 +2,7 @@
 import Request from '../models/Request.js';
 import PharmacyCode from '../models/PharmacyCode.js';
 import Notification from '../models/Notification.js';
+import crypto from 'crypto';
 
 // GET /api/admin/pending
 export const getPendingRequests = async (req, res) => {
