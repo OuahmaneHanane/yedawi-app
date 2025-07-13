@@ -1,28 +1,41 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Search, Trash2, Pencil } from 'lucide-react';
+import axios from 'axios';
 
 const UsersPage = () => {
-  const [users, setUsers] = useState([
-    { _id: '1', name: 'Oumaima Akdim', email: 'oumaima@gmail.com', role: 'admin', joinDate: '2024-01-15', status: 'active' },
-    { _id: '2', name: 'Ahmed Said', email: 'ahmed@example.com', role: 'donor', joinDate: '2024-02-20', status: 'active' },
-    { _id: '3', name: 'Fatima Zahra', email: 'fatima@example.com', role: 'beneficiary', joinDate: '2024-03-10', status: 'inactive' },
-    { _id: '4', name: 'Youssef Benali', email: 'youssef@example.com', role: 'admin', joinDate: '2024-01-28', status: 'active' },
-    { _id: '5', name: 'Salma Idrissi', email: 'salma@example.com', role: 'donor', joinDate: '2024-04-05', status: 'pending' },
-  ]);
-
+  const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('all');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch users from the backend
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get('http://localhost:5000/api/users', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUsers(res.data);
+      } catch (err) {
+        setError('Failed to fetch users');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   const handleDelete = (id) => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
     setUsers(users.filter((user) => user._id !== id));
   };
 
-  // لون roles متناسق مع صفحة Requests
   const getRoleColor = (role) => {
     if (role === 'beneficiary') return 'bg-green-100 text-green-700 font-semibold';
     if (role === 'donor') return 'bg-emerald-50 text-green-700 font-semibold';
-    return 'bg-slate-100 text-slate-500'; // لل roles الأخرى (لو ظهرت)
+    return 'bg-slate-100 text-slate-500';
   };
 
   const getStatusColor = (status) => {
@@ -34,20 +47,21 @@ const UsersPage = () => {
     }
   };
 
-  // هنا فلترة باش مايبانوش admins و باش الفلترة والبحث يخدمو مزيان
   const filteredUsers = users.filter((user) => {
-    if (user.role === 'admin') return false; // استبعد admins
+    if (user.role === 'admin') return false;
     const matchesSearch =
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+      user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = filterRole === 'all' || user.role === filterRole;
     return matchesSearch && matchesRole;
   });
 
+  if (loading) return <p className="text-center text-green-700 font-medium">Loading users...</p>;
+  if (error) return <p className="text-center text-red-500 font-medium">{error}</p>;
+
   return (
     <div className="min-h-[75vh] bg-white p-4 sm:p-6 font-sans text-slate-800">
       <div className="max-w-7xl w-full mx-auto">
-        {/* Header */}
         <div className="bg-gradient-to-r from-green-400 via-emerald-200 to-green-400 p-5 rounded-2xl shadow-md flex flex-col sm:flex-row justify-between items-center mb-6 text-white">
           <div>
             <h1 className="text-xl font-bold">Users Management</h1>
@@ -63,7 +77,6 @@ const UsersPage = () => {
         <div className="bg-white p-2 rounded-xl shadow-md mb-6 border border-gray-200">
           <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 w-full">
-              {/* Search */}
               <div className="relative w-full sm:w-64">
                 <input
                   type="text"
@@ -74,8 +87,6 @@ const UsersPage = () => {
                 />
                 <Search className="absolute top-2 left-3 w-4 h-4 text-green-700" />
               </div>
-
-              {/* Role Filter */}
               <div className="relative w-full sm:w-36 mt-2 sm:mt-0">
                 <select
                   value={filterRole}
@@ -94,7 +105,7 @@ const UsersPage = () => {
           </div>
         </div>
 
-        {/* Table for Desktop */}
+        {/* Desktop Table */}
         <div className="overflow-x-auto rounded-xl shadow-md border border-gray-200 hidden sm:block">
           <table className="min-w-[600px] sm:min-w-full text-sm text-left font-medium">
             <thead className="bg-emerald-400 text-emerald-900 uppercase text-xs tracking-wider">
@@ -122,19 +133,19 @@ const UsersPage = () => {
                   </td>
                   <td className="px-4 sm:px-6 py-3 min-w-[90px]">
                     <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getRoleColor(user.role)}`}>
-                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                      {user.role?.charAt(0).toUpperCase() + user.role?.slice(1)}
                     </span>
                   </td>
                   <td className="px-4 sm:px-6 py-3 min-w-[90px]">
                     <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(user.status)}`}>
-                      {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                      {user.status?.charAt(0).toUpperCase() + user.status?.slice(1)}
                     </span>
                   </td>
                   <td className="px-4 sm:px-6 py-3 min-w-[110px] text-xs text-slate-600 whitespace-nowrap">
                     {new Date(user.joinDate).toLocaleDateString('en-GB', {
                       day: '2-digit',
                       month: 'short',
-                      year: 'numeric'
+                      year: 'numeric',
                     })}
                   </td>
                   <td className="px-4 sm:px-6 py-3 text-center whitespace-nowrap min-w-[110px]">
@@ -171,7 +182,7 @@ const UsersPage = () => {
               <div className="flex justify-between items-center mb-2">
                 <div>
                   <div className="text-base font-bold text-emerald-900 truncate">{user.name}</div>
-                  <div className="text-xs text-emerald-00 truncate">{user.email}</div>
+                  <div className="text-xs text-emerald-600 truncate">{user.email}</div>
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -192,10 +203,10 @@ const UsersPage = () => {
               </div>
               <div className="text-sm mb-1">
                 <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${getRoleColor(user.role)}`}>
-                  {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                  {user.role?.charAt(0).toUpperCase() + user.role?.slice(1)}
                 </span>
                 <span className={`ml-2 inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusColor(user.status)}`}>
-                  {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                  {user.status?.charAt(0).toUpperCase() + user.status?.slice(1)}
                 </span>
               </div>
               <div className="text-[11px] text-slate-600 mt-1">

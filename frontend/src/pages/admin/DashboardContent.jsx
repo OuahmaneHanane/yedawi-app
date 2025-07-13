@@ -14,7 +14,7 @@ const DashboardContent = () => {
   const [requests, setRequests] = useState([]);
   const [profiles, setProfiles] = useState([]);
 
-  // Fetch requests from backend
+  // جلب الطلبات من السيرفر
   const fetchRequests = async () => {
     try {
       const res = await fetch('http://localhost:5000/api/requests/all', {
@@ -39,15 +39,14 @@ const DashboardContent = () => {
     }
   };
 
-  // Fetch users from backend
+  // جلب المستخدمين من السيرفر
   const fetchUsers = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/users', {
+      const res = await fetch('http://localhost:5000/api/user', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       const data = await res.json();
 
-      // **تأكد أن data مصفوفة قبل استخدام filter**
       const usersArray = Array.isArray(data) ? data : [];
 
       const filteredProfiles = usersArray.filter(
@@ -70,15 +69,57 @@ const DashboardContent = () => {
     fetchUsers();
   }, []);
 
-  const handleApproveRequest = (id) => {
-    setRequests(prev =>
-      prev.map(r => (r._id === id ? { ...r, status: 'approved' } : r))
-    );
-    setAdminData(prev => ({
-      ...prev,
-      approvedCodes: prev.approvedCodes + 1,
-      requestsPending: prev.requestsPending - 1,
-    }));
+  // دالة الموافقة على طلب وتحديث الحالة والعدادات مع تحديث API
+  const handleApproveRequest = async (id) => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://localhost:5000/api/requests/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: 'approved' }),
+      });
+      if (!res.ok) throw new Error('Failed to approve request');
+
+      setRequests(prev =>
+        prev.map(r => (r._id === id ? { ...r, status: 'approved' } : r))
+      );
+      setAdminData(prev => ({
+        ...prev,
+        approvedCodes: prev.approvedCodes + 1,
+        requestsPending: prev.requestsPending - 1,
+      }));
+    } catch (error) {
+      console.error('Approve request error:', error);
+    }
+  };
+
+  // دالة رفض الطلب مع تحديث API
+  const handleRejectRequest = async (id) => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://localhost:5000/api/requests/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: 'rejected' }),
+      });
+      if (!res.ok) throw new Error('Failed to reject request');
+
+      setRequests(prev =>
+        prev.map(r => (r._id === id ? { ...r, status: 'rejected' } : r))
+      );
+      setAdminData(prev => ({
+        ...prev,
+        requestsPending: prev.requestsPending - 1,
+      }));
+    } catch (error) {
+      console.error('Reject request error:', error);
+    }
   };
 
   return (
@@ -96,7 +137,11 @@ const DashboardContent = () => {
       />
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6">
-        <RequestManagementSection requests={requests} onApprove={handleApproveRequest} />
+        <RequestManagementSection
+          requests={requests}
+          onApprove={handleApproveRequest}
+          onReject={handleRejectRequest}
+        />
         <UserProfilesSection profiles={profiles} />
       </div>
     </div>
