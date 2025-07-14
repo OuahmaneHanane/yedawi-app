@@ -1,58 +1,90 @@
-import DonateButton from './DonationButton'; 
+import DonateButton from './DonationButton';
 
 const DonationSummary = ({ formData, onEdit, onComplete, showPrint = false }) => {
-  const amount = parseFloat(formData.amount || 0);
-  const tip = (amount * 0.03).toFixed(2);
-  const total = (amount).toFixed(2);
-
+  const total = parseFloat(formData.amount || 0);
+  const tip = (total * 0.03).toFixed(2);
+  const baseAmount = (total - parseFloat(tip)).toFixed(2);
   const isPayPal = formData.method === "PayPal";
 
   return (
-    <div >
-      <h2 className="text-2xl font-bold text-center text-green-400 mb-4">
-        Review Your Donation
+    <div className="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+      <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6 font-serif">
+        Donation Summary
       </h2>
 
-      <div className="space-y-2 text-sm">
-        <div><strong>Full Name:</strong> {formData.fullName}</div>
-        <div><strong>Email:</strong> {formData.email}</div>
-        <div><strong>Phone:</strong> {formData.phone || 'Not provided'}</div>
-        <div><strong>Donation Amount:</strong> {amount} USD</div>
-        <div><strong>Yedawi Tip (3%):</strong> {tip} USD</div>
-        <div><strong><u>Total:</u></strong> <strong>{total} USD</strong></div>
-        <div><strong>Payment Method:</strong> {formData.method}</div>
-        <div><strong>Recurring Donation:</strong> {formData.recurring ? 'Yes' : '_'}</div>
-        {formData.recurring && (
-          <div><strong>Recurrence Type:</strong> {formData.recurrenceType || 'Monthly'}</div>
-        )}
+      <div className="space-y-4 text-gray-700 text-sm leading-normal">
+        <div>
+          <p className="text-gray-500 text-xs uppercase font-medium">Full Name</p>
+          <p className="font-medium text-base">{formData.fullName}</p>
+        </div>
+
+        <div>
+          <p className="text-gray-500 text-xs uppercase font-medium">Email</p>
+          <p className="font-medium text-base">{formData.email}</p>
+        </div>
+
+        <div>
+          <p className="text-gray-500 text-xs uppercase font-medium">Phone</p>
+          <p className="font-medium text-base">{formData.phone || 'Not provided'}</p>
+        </div>
+
+        <div>
+          <p className="text-gray-500 text-xs uppercase font-medium">Payment Method</p>
+          <p className="font-medium text-base">{formData.method}</p>
+        </div>
+
+        <div>
+          <p className="text-gray-500 text-xs uppercase font-medium">Base Amount</p>
+          <p className="font-medium text-base">${baseAmount}</p>
+        </div>
+
+        <div>
+          <p className="text-gray-500 text-xs uppercase font-medium">Yedawi Tip (3%)</p>
+          <p className="font-medium text-base">${tip}</p>
+        </div>
+
+        <div className="pt-4 border-t">
+          <p className="text-gray-500 text-xs uppercase font-medium">Total</p>
+          <p className="text-2xl font-bold text-green-600">${total.toFixed(2)}</p>
+        </div>
+
+        <div>
+          <p className="text-gray-500 text-xs uppercase font-medium">Recurring Donation</p>
+          <p className="font-medium text-base">
+            {formData.recurring ? `Yes – ${formData.recurrenceType || 'Monthly'}` : 'No'}
+          </p>
+        </div>
       </div>
 
-      <div className="flex flex-col md:flex-row justify-between mt-6 gap-4">
-        <button
-          onClick={onEdit}
-          className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition"
-        >
-          Edit
-        </button>
+      {/* Buttons */}
+      <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:justify-between items-center">
+  <button
+    onClick={onEdit}
+    className="w-full sm:w-auto px-5 h-[42px] text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition font-medium"
+  >
+    Edit
+  </button>
 
-        {!isPayPal ? (
-          <button
-            onClick={onComplete}
-            className="px-4 py-2 bg-green-400 text-white rounded hover:bg-green-00 transition"
-          >
-            Confirm & Donate
-          </button>
-        ) : (
-          <div className="w-full">
-            <DonateButton amount={total} onSuccess={onComplete} />
-          </div>
-        )}
+  {isPayPal ? (
+    <div className="w-full sm:w-auto max-w-[300px] min-w-[220px] h-[42px] flex items-center justify-center">
+      <div className="w-full">
+        <DonateButton amount={total} onSuccess={onComplete} />
       </div>
+    </div>
+  ) : (
+    <button
+      onClick={onComplete}
+      className="w-full sm:w-auto px-6 h-[42px] rounded-md bg-green-600 text-white hover:bg-green-700 transition font-semibold"
+    >
+      Confirm & Donate
+    </button>
+  )}
+</div>
 
       {showPrint && (
         <button
           onClick={() => window.print()}
-          className="mt-4 w-full bg-gray-600 text-white py-2 rounded hover:bg-gray-700"
+          className="mt-4 w-full bg-gray-800 text-white py-2 rounded-md hover:bg-black transition"
         >
           Print Receipt
         </button>

@@ -21,6 +21,7 @@ import DashboardContent from '../pages/admin/DashboardContent';
 import UsersPage from '../pages/admin/UsersPage';
 import PharmaciesPage from '../pages/admin/PharmaciesPage';
 import RequestsManagement from '../pages/admin/RequestsManagement';
+import DonationsPage from '../pages/admin/DonationsPage';
 
 
 
@@ -60,6 +61,7 @@ const AppRoutes = () => {
         <Route path="users" element={<UsersPage />} />
         <Route path="pharmacies" element={<PharmaciesPage />} />
         <Route path="requests" element={<RequestsManagement />} />
+        <Route path="donations" element={<DonationsPage />} />
       </Route>
 
       {/* Optional: 404 Not Found route */}

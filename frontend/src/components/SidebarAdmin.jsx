@@ -24,9 +24,10 @@ const SidebarAdmin = ({
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: TrendingUp },
-    { id: 'requests', label: 'Requests', icon: FileText },
-    { id: 'users', label: 'Users', icon: Users },
-    { id: 'pharmacies', label: 'Pharmacies', icon: ShoppingBag },
+  { id: 'requests', label: 'Requests', icon: FileText },
+  { id: 'users', label: 'Users', icon: Users },
+  { id: 'pharmacies', label: 'Pharmacies', icon: ShoppingBag },
+  { id: 'donations', label: 'Donations', icon: HandHeart },
   ];
 
   return (

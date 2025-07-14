@@ -241,7 +241,7 @@ const response = await axios.post(
                 >
                   <option value="Credit Card">Credit Card</option>
                   <option value="PayPal">PayPal</option>
-                  <option value="Mobile Payment">Mobile Payment</option>
+                  {/* <option value="Mobile Payment">Mobile Payment</option> */}
                 </select>
               </div>
 

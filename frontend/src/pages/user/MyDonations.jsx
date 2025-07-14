@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import axios from "axios";
+import { Loader2, AlertCircle, CheckCircle2, CalendarDays } from "lucide-react";
 
 const MyDonations = () => {
   const { user } = useOutletContext();
@@ -28,36 +29,55 @@ const MyDonations = () => {
   }, []);
 
   return (
-    <div className="flex-1 bg-gray-50 p-8 ml-64">
-      <h1 className="text-2xl font-bold mb-4">My Donations</h1>
+    <div className="flex-1 bg-gradient-to-br from-gray-100 to-white p-10 ml-64 min-h-screen">
+      <h1 className="text-3xl font-extrabold text-gray-800 mb-6 tracking-tight">💖 My Donations</h1>
 
-      {loading && <p>Loading donations...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+      {loading && (
+        <div className="flex items-center text-blue-500">
+          <Loader2 className="animate-spin mr-2" />
+          Loading your donations...
+        </div>
+      )}
+
+      {error && (
+        <div className="flex items-center text-red-600 mb-4">
+          <AlertCircle className="mr-2" />
+          {error}
+        </div>
+      )}
 
       {!loading && donations.length === 0 && (
-        <p className="text-gray-500">You haven’t made any donations yet.</p>
+        <div className="text-gray-500 italic">
+          You haven’t made any donations yet. Start making a difference today! ✨
+        </div>
       )}
 
       {!loading && donations.length > 0 && (
-        <ul className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {donations.map((donation) => (
-            <li
+            <div
               key={donation._id}
-              className="bg-white shadow-sm rounded-lg p-4 border"
+              className="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition-shadow duration-300 border border-gray-200"
             >
-              <p>
-                <strong>Amount:</strong> {donation.amount} USD
-              </p>
-              <p>
-                <strong>Status:</strong> {donation.status}
-              </p>
-              <p>
-                <strong>Date:</strong>{" "}
-                {new Date(donation.createdAt).toLocaleDateString()}
-              </p>
-            </li>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-xl font-semibold text-teal-700">
+                  ${donation.amount}
+                </h2>
+                <CheckCircle2 className="text-green-500" />
+              </div>
+              <div className="text-sm text-gray-600 space-y-1">
+                <p>
+                  <span className="font-medium">Status:</span>{" "}
+                  <span className="capitalize">{donation.status}</span>
+                </p>
+                <p className="flex items-center">
+                  <CalendarDays className="h-4 w-4 mr-1" />
+                  {new Date(donation.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

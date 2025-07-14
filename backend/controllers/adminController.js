@@ -2,6 +2,7 @@
 import Request from '../models/Request.js';
 import PharmacyCode from '../models/PharmacyCode.js';
 import Notification from '../models/Notification.js';
+import User from '../models/User.js';
 
 // GET /api/admin/pending
 export const getPendingRequests = async (req, res) => {
@@ -71,6 +72,17 @@ export const rejectRequest = async (req, res) => {
     res.json({ message: 'Request rejected' });
   } catch (err) {
     console.error('Error rejecting request:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+// GET /api/admin/users
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select('-password');
+    res.json(users);
+  } catch (err) {
+    console.error('Error fetching users:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };

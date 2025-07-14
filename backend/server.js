@@ -36,6 +36,7 @@ app.use('/api/user/requests', requestRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api', menuRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/uploads', express.static('uploads'));
 
 
 app.use((err, req, res, next) => {

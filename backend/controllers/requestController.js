@@ -131,6 +131,17 @@ export const updateRequestStatus = async (req, res) => {
     }
 
     const updated = await request.save();
+
+    // ✅ Send notification on status change
+    if (['approved', 'rejected'].includes(status)) {
+      await Notification.create({
+        user: request.user,
+        message: `Your request has been ${status}.`,
+        type: status === 'approved' ? 'success' : 'info',
+        read: false,
+      });
+    }
+
     res.json(updated);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
@@ -164,25 +175,3 @@ export const getMyNotifications = async (req, res) => {
   }
 };
 
-/**
- * PUT /api/notifications/:id/read
- * Mark a single notification as read
- */
-export const markNotificationRead = async (req, res) => {
-  try {
-    const notif = await Notification.findOneAndUpdate(
-      { _id: req.params.id, user: req.user._id }, // ownership check
-      { read: true },
-      { new: true }
-    );
-
-    if (!notif) {
-      return res.status(404).json({ message: 'Notification not found.' });
-    }
-
-    res.json({ message: 'Notification marked as read.', notification: notif });
-  } catch (err) {
-    console.error('Mark notification read error:', err);
-    res.status(500).json({ message: 'Server error', error: err.message });
-  }
-};

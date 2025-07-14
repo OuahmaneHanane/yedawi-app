@@ -15,7 +15,8 @@ const RequestsManagement = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         
-        setRequests(response.data);
+        setRequests(response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+;
       } catch (err) {
         setError('Failed to fetch requests');
         console.error(err);
@@ -110,7 +111,16 @@ const RequestsManagement = () => {
                         <h3 className="font-bold text-slate-800 text-sm sm:text-base">{req.user?.name ?? 'Unknown'}</h3>
                         <p className="text-slate-500 text-xs">{req.user?.email ?? 'No email'}</p>
                         <div className="mt-1 text-xs text-slate-500 flex gap-4">
-                          <span className="flex items-center gap-1">📄 {req.prescriptionFile}</span>
+                          {req.prescriptionFile && (
+  <a
+  href={`http://localhost:5000/${req.prescriptionFile.replace(/^\/?uploads\//, 'uploads/')}`}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="text-blue-600 hover:underline text-xs"
+>
+  📄 View Prescription
+</a>
+)}
                           <span className="flex items-center gap-1">📅 {new Date(req.submittedAt).toLocaleDateString()}</span>
                         </div>
                       </div>
