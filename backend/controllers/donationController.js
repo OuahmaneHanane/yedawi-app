@@ -21,7 +21,7 @@ export const createDonation = async (req, res) => {
     } = req.body;
 
     const donation = new Donation({
-      user: userId = req.user._id,  // make sure this is set by protect middleware
+      user: req.user._id,  // make sure this is set by protect middleware
       fullName,
       email,
       phone,
@@ -108,15 +108,17 @@ export const markDonationAsUsed = async (req, res) => {
   }
 };
 
+
+// GET /api/admin/donations - Admin only
 export const getAllDonations = async (req, res) => {
   try {
     const donations = await Donation.find()
-      .populate('user', 'name email') // optional: show who donated
+      .populate('user', 'name email')
       .sort({ createdAt: -1 });
 
-    res.status(200).json(donations);
+    res.json(donations);
   } catch (error) {
     console.error('Error fetching all donations:', error);
-    res.status(500).json({ message: 'Failed to fetch donations', error });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

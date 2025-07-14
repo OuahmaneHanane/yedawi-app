@@ -29,7 +29,7 @@ const DonationForm = () => {
         if (!token) throw new Error("No auth token");
 
         const { data } = await axios.get(
-          "http://localhost:5000/api/user/me",
+          "/api/users/me",
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -86,7 +86,7 @@ const DonationForm = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.post(
-        "http://localhost:5000/api/user/donations",
+        "/api/user/donations",
         {
           fullName: formData.fullName,
           email: formData.email,
@@ -114,7 +114,6 @@ const DonationForm = () => {
         email: formData.email,
       });
     } catch (err) {
-      console.log(err)
       console.error("Donation save failed:", err);
       alert(
         err.response?.data?.message ||
@@ -240,7 +239,7 @@ const DonationForm = () => {
                 >
                   <option value="Credit Card">Credit Card</option>
                   <option value="PayPal">PayPal</option>
-                  <option value="Mobile Payment">Mobile Payment</option>
+                  {/* <option value="Mobile Payment">Mobile Payment</option> */}
                 </select>
               </div>
 

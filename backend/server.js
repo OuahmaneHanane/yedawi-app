@@ -24,7 +24,6 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir);
   console.log('Uploads directory created.');
 }
-
 const app = express()
 
 // Allow requests from Vite dev server
@@ -43,9 +42,8 @@ app.use('/api/requests', requestRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api', menuRoutes);
 app.use('/api/notifications', notificationRoutes);
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
-app.use(morgan('dev'));
-app.use('/api/donations', donationRoutes);
+app.use('/uploads', express.static('uploads'));
+
 
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError || err.message.includes("Unsupported")) {

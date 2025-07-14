@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Search, Trash2 } from 'lucide-react';
+import axiosInstance from '../../api/axiosInstance'; // or correct path
 import axios from 'axios';
+
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -12,9 +14,12 @@ const UsersPage = () => {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:5000/api/users', {
-          headers: { Authorization: `Bearer ${token}` },
+        const res = await axios.get('api/admin/users', {
+          headers: {
+            Authorization: `Bearer ${token}` // Attach token for authentication
+          }
         });
+
         setUsers(res.data);
       } catch (err) {
         setError('Failed to fetch users');
@@ -54,7 +59,6 @@ const UsersPage = () => {
   return (
     <div className="min-h-[75vh] bg-white p-4 sm:p-6 font-sans text-slate-800">
       <div className="max-w-7xl w-full mx-auto">
-        {/* Header */}
         <div className="bg-gradient-to-r from-green-400 via-emerald-200 to-green-400 p-5 rounded-2xl shadow-md flex flex-col sm:flex-row justify-between items-center mb-6 text-white">
           <div>
             <h1 className="text-xl font-bold">Users Management</h1>

@@ -50,6 +50,62 @@ export const getUserNotifications = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch notifications.' });
   }
 };
+// GET /api/user/dashboard/summary
+export const getDashboardSummary = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const [donationCount, requestCount, unreadNotifications] = await Promise.all([
+      Donation.countDocuments({ user: userId }),
+      Request.countDocuments({ user: userId }),
+      Notification.countDocuments({ user: userId, read: false }),
+    ]);
+
+    res.json({
+      donations: donationCount,
+      requests: requestCount,
+      notifications: unreadNotifications,
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+/**
+ * PUT /api/notifications/:id/read
+ * Mark a single notification as read
+ */
+export const markNotificationRead = async (req, res) => {
+  try {
+    const notif = await Notification.findOneAndUpdate(
+      { _id: req.params.id, user: req.user._id }, // ownership check
+      { read: true },
+      { new: true }
+    );
+
+    if (!notif) {
+      return res.status(404).json({ message: 'Notification not found.' });
+    }
+
+    res.json({ message: 'Notification marked as read.', notification: notif });
+  } catch (err) {
+    console.error('Mark notification read error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+// // PUT /api/user/notifications/mark-all-read
+// export const markAllNotificationsRead = async (req, res) => {
+//   try {
+//     await Notification.updateMany(
+//       { user: req.user.id, read: false },
+//       { $set: { read: true } }
+//     );
+//     res.json({ message: 'All notifications marked as read.' });
+//   } catch (err) {
+//     res.status(500).json({ message: 'Server error', error: err.message });
+//   }
+// };
 
 export const getAllUsers = async (req, res) => {
   try {

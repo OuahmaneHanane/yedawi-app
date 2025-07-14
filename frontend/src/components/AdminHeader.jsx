@@ -10,7 +10,7 @@ const AdminHeader = ({ adminName = "Admin", onMenuClick }) => {
 
   const fetchNotifications = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/notifications', {
+      const res = await axios.get('/api/notifications', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -30,7 +30,7 @@ const AdminHeader = ({ adminName = "Admin", onMenuClick }) => {
   const markAsRead = async (id) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/notifications/${id}/read`,
+        `/api/notifications/${id}/read`,
         {},
         {
           headers: {

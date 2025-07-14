@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../../api/axiosInstance';
+import axios from 'axios';
 
 const DonationsPage = () => {
   const [donations, setDonations] = useState([]);
@@ -7,7 +8,12 @@ const DonationsPage = () => {
 
   const fetchDonations = async () => {
     try {
-      const response = await axiosInstance.get('/donations');
+
+      const response = await axios.get('api/admin/donations', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}` // Attach token for authentication
+        }
+      });
       setDonations(response.data);
     } catch (error) {
       console.error('Failed to fetch donations:', error);
@@ -73,10 +79,9 @@ const DonationsPage = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`inline-block px-3 py-1 rounded-full text-xs font-semibold
-                          ${
-                            d.status === 'approved'
-                              ? 'bg-green-100 text-green-800'
-                              : d.status === 'pending'
+                          ${d.status === 'approved'
+                            ? 'bg-green-100 text-green-800'
+                            : d.status === 'pending'
                               ? 'bg-yellow-100 text-yellow-800'
                               : 'bg-red-100 text-red-800'
                           }

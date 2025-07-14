@@ -34,7 +34,7 @@ const RequestForm = () => {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("No auth token");
 
-        const { data } = await axios.get("http://localhost:5000/api/user/me", {
+        const { data } = await axios.get("/api/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -161,7 +161,7 @@ const RequestForm = () => {
 
       const token = localStorage.getItem("token");
 
-      await axios.post("http://localhost:5000/api/user/requests", payload, {
+      await axios.post("/api/requests", payload, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

@@ -32,7 +32,7 @@ const AuthForm = ({ isLogin, onToggle, isAnimating, showToggle = true, onSuccess
   try {
     if (isLogin) {
       //  LOGIN
-      const res = await axios.post('http://localhost:5000/api/auth/login', {
+      const res = await axios.post('/api/auth/login', {
         email: formData.email,
         password: formData.password,
       });
@@ -58,7 +58,7 @@ const AuthForm = ({ isLogin, onToggle, isAnimating, showToggle = true, onSuccess
   password: formData.password
 });
 
-      const res = await axios.post('http://localhost:5000/api/auth/register', {
+      const res = await axios.post('/api/auth/register', {
         name: formData.fullName,
         email: formData.email,
         password: formData.password,

@@ -10,12 +10,14 @@ const RequestsManagement = () => {
     const fetchRequests = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:5000/api/requests/all', {
+        const response = await axios.get('/api/requests/all', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setRequests(res.data);
-      } catch (err) {
+
+        setRequests(response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+      } catch (error) {
         setError('Failed to fetch requests.');
+        console.error('Error fetching requests:', error);
       } finally {
         setLoading(false);
       }
@@ -28,7 +30,7 @@ const RequestsManagement = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `http://localhost:5000/api/requests/${id}`,
+        `/api/requests/${id}`,
         { status: 'approved' },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -44,7 +46,7 @@ const RequestsManagement = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `http://localhost:5000/api/requests/${id}`,
+        `/api/requests/${id}`,
         { status: 'rejected' },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -93,50 +95,56 @@ const RequestsManagement = () => {
   if (loading) return <p>Loading requests...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
 
-  // Newest requests first
-  const sortedRequests = [...requests].sort(
-    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-  );
-
   return (
     <div className="space-y-4">
-      {sortedRequests.map((req, index) => {
-        const name = req.user?.name ?? 'Unknown';
-        const email = req.user?.email ?? 'No email';
-
-        return (
-          <div
-            key={req._id || index}
-            className="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-slate-100 hover:border-slate-200"
-          >
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center space-x-4">
-                  <div
-                    className={`w-12 h-12 rounded-full ${getAvatarColor()} flex items-center justify-center text-white font-semibold text-sm shadow-md`}
-                  >
-                    {getInitials(name)}
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-slate-800 text-sm sm:text-base">{name}</h3>
-                    <p className="text-slate-500 text-xs">{email}</p>
-                    <div className="mt-1 text-xs text-slate-500 flex gap-4">
-                      <span>📄 {req.supportingDocument ?? 'No file'}</span>
-                      <span>📅 {req.createdAt ? new Date(req.createdAt).toLocaleDateString() : 'No date'}</span>
+      {requests.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="text-slate-300 text-6xl mb-4">📋</div>
+          <p className="text-slate-500 text-lg">No requests available</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {requests.map((req) => (
+            <div
+              key={req._id}
+              className="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-slate-100 hover:border-slate-200"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div
+                      className={`w-12 h-12 rounded-full ${getAvatarColor()} flex items-center justify-center text-white font-semibold text-sm shadow-md`}
+                    >
+                      {getInitials(req.user?.name ?? '')}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-800 text-sm sm:text-base">{req.user?.name ?? 'Unknown'}</h3>
+                      <p className="text-slate-500 text-xs">{req.user?.email ?? 'No email'}</p>
+                      <div className="mt-1 text-xs text-slate-500 flex gap-4">
+                        {req.prescriptionFile && (
+                          <a
+                            href={`http://localhost:5000/${req.prescriptionFile.replace(/^\/?uploads\//, 'uploads/')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline text-xs"
+                          >
+                            📄 View Prescription
+                          </a>
+                        )}
+                        <span className="flex items-center gap-1">📅 {new Date(req.submittedAt).toLocaleDateString()}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-
-                <div
-                  className={`inline-block px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(req.status)}`}
-                >
-                  {getStatusIcon(req.status)}{' '}
-                  {req.status ? req.status.charAt(0).toUpperCase() + req.status.slice(1) : 'Unknown'}
+                  <div className="text-right">
+                    <div className={`inline-block px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(req.status)}`}>
+                      {getStatusIcon(req.status)} {req.status.charAt(0).toUpperCase() + req.status.slice(1)}
+                    </div>
+                  </div>
                 </div>
               </div>
 
               {req.status === 'pending' && (
-                <div className="flex gap-3 pt-4 border-t border-slate-100">
+                <div className="flex gap-3 p-6 pt-0">
                   <button
                     onClick={() => handleApprove(req._id)}
                     className="flex-1 px-4 py-2 text-sm bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md font-medium"
@@ -152,9 +160,9 @@ const RequestsManagement = () => {
                 </div>
               )}
             </div>
-          </div>
-        );
-      })}
+          ))}
+        </div>
+      )}
     </div>
   );
 };

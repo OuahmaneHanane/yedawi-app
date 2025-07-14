@@ -30,15 +30,15 @@ const UserDashboard = () => {
         if (!token) return;
 
         // Fetch user profile
-        const userRes = await axios.get('http://localhost:5000/api/user/me', {
+        const userRes = await axios.get('/api/users/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(userRes.data);
 
         // Fetch user donations and requests
         const [donationsRes, requestsRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/user/donations/my-donations', { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get('http://localhost:5000/api/user/requests/my-requests', { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get('/api/users/me/donations', { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get('/api/users/me/requests', { headers: { Authorization: `Bearer ${token}` } }),
         ]);
 
         // Update stats

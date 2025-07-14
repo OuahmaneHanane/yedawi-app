@@ -1,12 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 
-const DonateButton = ({ amount = "10.00", onSuccess }) => {
+const DonateButton = ({ amount = amount.toString(), onSuccess }) => {
   const paypalRef = useRef();
 
   useEffect(() => {
     if (!window.paypal || !paypalRef.current) return;
 
-    // Clear previous buttons (to prevent duplicates)
     paypalRef.current.innerHTML = "";
 
     window.paypal.Buttons({
@@ -20,7 +19,7 @@ const DonateButton = ({ amount = "10.00", onSuccess }) => {
         return actions.order.create({
           purchase_units: [{
             amount: {
-              value: "10.00",
+              value: amount.toString(),
               currency_code: "USD"
             }
           }]

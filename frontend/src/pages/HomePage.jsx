@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import StoriesStyleImpactCarousel from '../components/ImpactCarousel';
 import {
   HandHeart,
   User,
@@ -78,7 +79,7 @@ useEffect(() => {
               <a href="#about" className="text-gray-700 hover:text-green-400 transition-colors">About</a>
               <a href="#how-it-works" className="text-gray-700 hover:text-green-400 transition-colors">How It Works</a>
               <a href="#contact" className="text-gray-700 hover:text-green-400 transition-colors">Contact</a>
-              <a href="/impact" className="text-gray-700 hover:text-green-400 transition-colors">Impact</a>
+              <a href="#impact" className="text-gray-700 hover:text-green-400 transition-colors">Impact</a>
             </nav>
 
                       {isLoggedIn && role ? (
@@ -382,6 +383,12 @@ useEffect(() => {
           </div>
         </div>
       </section>
+
+      <section id='impact' className="bg-white min-h-screen flex flex-col justify-center items-center">
+  {/* carousel goes here */}
+  <StoriesStyleImpactCarousel/>
+</section>
+
       
       {/* Newsletter Section */}
       <section className="py-12 bg-gradient-to-r from-green-400 to-emerald-500">

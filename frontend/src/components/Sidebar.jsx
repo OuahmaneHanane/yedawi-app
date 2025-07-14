@@ -34,10 +34,13 @@ const getActiveTabFromPath = (pathname) => {
     const token = localStorage.getItem('token');
     if (!token) return;
 
-    axios.get('http://localhost:5000/api/user/dashboard/summary', {
+    axios.get('/api/users/dashboard/summary', {
       headers: { Authorization: `Bearer ${token}` }
     })
-    .then(res => setStats(res.data))
+    .then(res => {
+    console.log("📬 Dashboard summary:", res.data); // <-- This should show the notification count
+    setStats(res.data);
+  })
     .catch(err => console.error('Summary fetch error', err));
   }, []);
 
@@ -49,7 +52,20 @@ const getActiveTabFromPath = (pathname) => {
     { id: 'donations',  icon: FolderHeart,  label: 'My Donations' },
     { id: 'requests',   icon: ClipboardList,label: 'My Requests' },
     { id: 'support',    icon: MessageCircle,label: 'Support' },
-    { id: 'notifications', icon: Bell,      label: `Notifications (${stats.notifications})` }
+    {
+  id: 'notifications',
+  icon: Bell,
+  label: (
+    <span className="flex items-center gap-1">
+      Notifications
+      {stats.notifications > 0 && (
+        <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-red-500 rounded-full">
+          {stats.notifications}
+        </span>
+      )}
+    </span>
+  ),
+}
   ];
 console.log("Sidebar user:", user);
 

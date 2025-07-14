@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import StatsGrid from '../../components/Stats-Grid-Admin';
 import RequestManagementSection from '../../components/RequestManagementSection';
 import UserProfilesSection from '../../components/UserProfilesSection';
+import axios from 'axios';
 
 const DashboardContent = () => {
   const [adminData, setAdminData] = useState({
@@ -17,14 +18,16 @@ const DashboardContent = () => {
   // جلب الطلبات من السيرفر
   const fetchRequests = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/requests/all', {
+      const res = await axios('/api/requests/all', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-      const data = await res.json();
-
+      const data = res.data; console.log(data);
       const requestsArray = Array.isArray(data) ? data : [];
 
-      setRequests(requestsArray);
+      const sortedRequests = [...requestsArray].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      setRequests(sortedRequests.slice(0, 5));
 
       const pending = requestsArray.filter(r => r.status === 'pending').length;
       const approved = requestsArray.filter(r => r.status === 'approved').length;
@@ -42,7 +45,7 @@ const DashboardContent = () => {
   // جلب المستخدمين من السيرفر
   const fetchUsers = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/user', {
+      const res = await fetch('/api/user', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       const data = await res.json();
@@ -73,7 +76,7 @@ const DashboardContent = () => {
   const handleApproveRequest = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:5000/api/requests/${id}`, {
+      const res = await fetch(`/api/requests/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -100,7 +103,7 @@ const DashboardContent = () => {
   const handleRejectRequest = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:5000/api/requests/${id}`, {
+      const res = await fetch(`/api/requests/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
