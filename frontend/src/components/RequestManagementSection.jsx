@@ -7,7 +7,7 @@ const Typography = ({ variant, className, children }) => {
     caption: 'text-sm',
     small: 'text-xs'
   };
-  
+
   return (
     <span className={`${variants[variant]} ${className}`}>
       {children}
@@ -101,11 +101,11 @@ const RequestManagementSection = ({ requests = [] }) => {
                   </div>
                   <div>
                     <Typography variant="body" className="text-slate-800 font-semibold">
-  {req.user?.name || 'Unknown'}
-</Typography>
-<Typography variant="caption" className="text-slate-500">
-  {req.medicine || 'N/A'}
-</Typography>
+                      {req.user?.name || 'Unknown'}
+                    </Typography>
+                    <Typography variant="caption" className="text-slate-500">
+                      {req.medicine || 'N/A'}
+                    </Typography>
                   </div>
                 </div>
 

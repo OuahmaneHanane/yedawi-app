@@ -45,6 +45,7 @@ app.use('/api', menuRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 app.use(morgan('dev'));
+app.use('/api/donations', donationRoutes);
 
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError || err.message.includes("Unsupported")) {

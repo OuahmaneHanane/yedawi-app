@@ -107,3 +107,16 @@ export const markDonationAsUsed = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
+export const getAllDonations = async (req, res) => {
+  try {
+    const donations = await Donation.find()
+      .populate('user', 'name email') // optional: show who donated
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(donations);
+  } catch (error) {
+    console.error('Error fetching all donations:', error);
+    res.status(500).json({ message: 'Failed to fetch donations', error });
+  }
+};

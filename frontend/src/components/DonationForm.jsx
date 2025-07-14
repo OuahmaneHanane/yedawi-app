@@ -85,26 +85,26 @@ const DonationForm = () => {
 
       const token = localStorage.getItem("token");
 
-const response = await axios.post(
-  "http://localhost:5000/api/user/donations",
-  {
-    fullName: formData.fullName,
-    email: formData.email,
-    phone: formData.phone,
-    amount: Number(formData.amount),
-    tip: Number(formData.tip),
-    method: paypalDetails ? "PayPal" : formData.method,
-    status: "completed",
-    transactionId: paypalDetails?.id,
-    recurring: formData.recurring,
-    recurrenceType: formData.recurring ? formData.recurrenceType : null,
-  },
-  {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }
-);
+      const response = await axios.post(
+        "http://localhost:5000/api/user/donations",
+        {
+          fullName: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          amount: Number(formData.amount),
+          tip: Number(formData.tip),
+          method: paypalDetails ? "PayPal" : formData.method,
+          status: "completed",
+          transactionId: paypalDetails?.id,
+          recurring: formData.recurring,
+          recurrenceType: formData.recurring ? formData.recurrenceType : null,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
 
       setDonationSuccess(true);
@@ -114,10 +114,11 @@ const response = await axios.post(
         email: formData.email,
       });
     } catch (err) {
+      console.log(err)
       console.error("Donation save failed:", err);
       alert(
         err.response?.data?.message ||
-          "Sorry, something went wrong saving your donation."
+        "Sorry, something went wrong saving your donation."
       );
     } finally {
       setSubmitting(false);
@@ -190,9 +191,8 @@ const response = await axios.post(
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className={`w-full p-2 border rounded ${
-                    errors.phone ? "border-red-600" : "border-gray-300"
-                  }`}
+                  className={`w-full p-2 border rounded ${errors.phone ? "border-red-600" : "border-gray-300"
+                    }`}
                 />
                 {errors.phone && (
                   <p className="text-red-600 text-sm mt-1">{errors.phone}</p>
@@ -210,9 +210,8 @@ const response = await axios.post(
                   value={formData.amount}
                   onChange={handleChange}
                   min="1"
-                  className={`w-full p-2 border rounded ${
-                    errors.amount ? "border-red-600" : "border-gray-300"
-                  }`}
+                  className={`w-full p-2 border rounded ${errors.amount ? "border-red-600" : "border-gray-300"
+                    }`}
                 />
                 {errors.amount && (
                   <p className="text-red-600 text-sm mt-1">{errors.amount}</p>
@@ -271,9 +270,8 @@ const response = await axios.post(
               <button
                 type="submit"
                 disabled={submitting}
-                className={`bg-green-500 text-white p-2 w-full rounded ${
-                  submitting ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`bg-green-500 text-white p-2 w-full rounded ${submitting ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
               >
                 {submitting ? "Saving..." : "Continue to Summary"}
               </button>
